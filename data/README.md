@@ -1,17 +1,16 @@
 # 資料格式（data/stations.json）
 
-替換資料時只要改這個檔案，不用動程式。
+- `meta.isDemo`：false 表示真實資料版（不顯示示範橫幅）。
+- `meta.startTime` / `meta.startDate`：出發時間與日期，用來推算「預估抵達」並顯示日期（例：11/15 00:30）。
+- `meta.paceOptions` / `meta.defaultPace`：可選的平均速度（km/h，含休息）。
+- `meta.timeLimitHours`：合格時間（小時）。
+- `meta.closeWarningMinutes`：關門提醒門檻（分鐘）。
+- `stations`：由北到南排序。
+  - `id`、`name`、`km`（官方大約累計里程）、`close`（關門時間 `HH:MM`，跨日寫成超過 24，如 `24:30` = 隔日 00:30）
+  - `region`、`place`、`road`（公路樁號）、`supplies`、`note`
+  - `eta`（選填）：寫了就用固定值，不寫就依所選速度推算
+  - `conflict`（選填）：來源不一致時為 true，卡片會用橘色框提示
+  - `unverified`（選填）：未查證項目清單
+- `sources`：資料來源（`label`、`url`、`kind`），只接受 https 連結。
 
-- `meta.isDemo`：true 時畫面頂端顯示「示範資料」橫幅。換成官方資料後改成 false。
-- `meta.note`：橫幅說明文字。
-- `meta.closeWarningMinutes`：關門提醒門檻（分鐘）。建議抵達時間距關門時間少於這個值，該站與通往它的路段標橘色。
-- `stations`：由北到南（出發到終點）排序。
-  - `id`：唯一代號（字串）
-  - `name`：站名
-  - `km`：累積里程（數字，公里）
-  - `eta`：建議抵達時間 `HH:MM`
-  - `close`：關門時間 `HH:MM`
-  - `supplies`：補給項目（字串陣列）
-
-時間跨過午夜時，小時可寫超過 24（例如 `26:10`），畫面會顯示為「隔日 02:10」。
-「與上一站距離」由相鄰兩站 `km` 相減自動算出。
+資料擷取日：2026-11-10。來源：中華民國自行車協會 https://taiwanbike.org/index.php/688

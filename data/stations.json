@@ -1,20 +1,76 @@
 {
   "meta": {
-    "title": "路線島",
-    "isDemo": true,
-    "note": "站名、里程與時間皆為虛構，僅供版面測試，請勿作為騎乘依據。",
-    "startTime": "04:00",
-    "closeWarningMinutes": 30
+    "title": "雙塔520 路線島",
+    "event": "2026 TBA 雙塔520 自行車認證",
+    "organizer": "中華民國自行車協會（TBA）",
+    "isDemo": false,
+    "retrieved": "2026-11-10",
+    "startTime": "00:00",
+    "startDate": "2026-11-14",
+    "timeLimitHours": 30,
+    "closeWarningMinutes": 30,
+    "paceOptions": [17, 18, 20, 22, 24],
+    "defaultPace": 20,
+    "note": "檢查站、里程與關門時間摘自主辦單位網站（2026-11-10 擷取）。主辦單位註明路線為初步規劃，請以大會最新公告為準。「預估抵達」是依你選的平均速度（含休息）推算的參考值，非官方資料。"
   },
   "stations": [
-    { "id": "A", "name": "示範站 A", "km": 0,   "eta": "04:00", "close": "05:00", "supplies": ["報到", "飲水", "廁所"] },
-    { "id": "B", "name": "示範站 B", "km": 62,  "eta": "06:40", "close": "07:30", "supplies": ["飲水", "香蕉", "廁所"] },
-    { "id": "C", "name": "示範站 C", "km": 128, "eta": "09:30", "close": "10:20", "supplies": ["飲水", "運動飲料", "麵包", "打氣筒"] },
-    { "id": "D", "name": "示範站 D", "km": 190, "eta": "12:10", "close": "12:30", "supplies": ["午餐", "飲水", "機械支援"] },
-    { "id": "E", "name": "示範站 E", "km": 255, "eta": "15:00", "close": "16:10", "supplies": ["飲水", "水果", "冰塊"] },
-    { "id": "F", "name": "示範站 F", "km": 318, "eta": "17:40", "close": "18:00", "supplies": ["飲水", "鹽錠", "廁所"] },
-    { "id": "G", "name": "示範站 G", "km": 385, "eta": "20:30", "close": "21:40", "supplies": ["晚餐", "飲水", "車燈檢查"] },
-    { "id": "H", "name": "示範站 H", "km": 452, "eta": "23:20", "close": "23:45", "supplies": ["飲水", "熱湯", "機械支援"] },
-    { "id": "I", "name": "示範終點 I", "km": 520, "eta": "26:10", "close": "27:00", "supplies": ["完騎", "餐點", "醫護"] }
+    {
+      "id": "S0", "name": "富貴角（起點）", "region": "新北-石門", "place": "富貴角燈塔・楓林橋",
+      "km": 0, "road": "臺2線 25.0K", "close": "00:30",
+      "supplies": ["集合・出發", "行李托運交付（大會行李車）"],
+      "note": "00:00 出發。官方表列本站關門 00:30。",
+      "source": "official"
+    },
+    {
+      "id": "S1", "name": "新竹香山", "region": "新竹市", "place": "風情海岸",
+      "km": 107, "road": "臺61線 79K", "close": "06:30",
+      "supplies": ["簡易補給品（內容未查證）"],
+      "note": "里程為官方「大約累計里程」。",
+      "source": "official"
+    },
+    {
+      "id": "S2", "name": "彰化王功", "region": "彰化-王功", "place": "福海宮",
+      "km": 227, "road": "臺17線 54.3K", "close": "13:30",
+      "supplies": ["簡易補給品（內容未查證）"],
+      "note": "里程為官方「大約累計里程」。",
+      "source": "official"
+    },
+    {
+      "id": "S3", "name": "嘉義布袋", "region": "嘉義-布袋", "place": "布袋鹽山",
+      "km": 301, "road": "臺17線 128K", "close": "18:00",
+      "supplies": ["簡易補給品（內容未查證）"],
+      "note": "⚠ 來源不一致：主辦單位網站（2026-11-10 擷取）列「嘉義-布袋 布袋鹽山 301K 關門 18:00」；第三方整理（24EZGO 2026-10-25、CT Yeh）則寫「台南-將軍 吉安宮 323K 關門 19:00」。本頁採官方網站版本，請以行前通知或現場為準。",
+      "source": "official",
+      "conflict": true
+    },
+    {
+      "id": "S4", "name": "屏東東港", "region": "屏東-東港", "place": "東港慈濟",
+      "km": 430, "road": "臺17線 247K", "close": "24:30",
+      "supplies": ["簡易補給品（內容未查證）"],
+      "note": "關門為 11/15 00:30。依官方里程與關門推算，這是全程要求平均速度最高的一站（約 17.6 km/h，含休息）。",
+      "source": "official"
+    },
+    {
+      "id": "S5", "name": "墾丁海山", "region": "屏東-墾丁", "place": "海山露營區",
+      "km": 515, "road": "臺26線 42.8K", "close": "30:00",
+      "supplies": ["簡易補給品（內容未查證）", "回程接駁車由此發車（加購者）"],
+      "note": "關門 11/15 06:00。回程接駁車於 11/15 00:30–06:30 由海山露營區發車，須攜車袋、人滿發車。",
+      "source": "official"
+    },
+    {
+      "id": "F", "name": "鵝鑾鼻（終點）", "region": "屏東-恆春", "place": "鵝鑾鼻燈塔",
+      "km": 520, "road": "臺26線", "close": "30:00",
+      "supplies": ["終點簡易餐點", "雙塔獎座・認證書・運動毛巾（於終點領取）"],
+      "note": "官方總里程 520 公里、全程關門 11/15 06:00。終點晶片感應與領獎的實際位置（燈塔或海山露營區）未查證；官方表列 515K 海山露營區為最後一站。",
+      "source": "official",
+      "unverified": ["終點感應位置", "終點本身的關門時間是否等同全程關門"]
+    }
+  ],
+  "sources": [
+    { "label": "中華民國自行車協會｜2026 TBA雙塔520自行車認證（活動簡章）", "url": "https://taiwanbike.org/index.php/688", "kind": "官方" },
+    { "label": "中華民國自行車協會｜2026 TBA雙塔520自行車認證（公告事項）", "url": "https://taiwanbike.org/index.php/690", "kind": "官方" },
+    { "label": "24EZGO｜雙塔 520 有保母車嗎？檢查站關門時間與注意事項（2026-10-25 更新）", "url": "https://24ezgo.seh.com.tw/guides/taiwan-twin-towers/", "kind": "第三方" },
+    { "label": "CT Yeh｜2026 TBA雙塔520自行車認證 賽事詳情", "url": "https://ctyeh.com/cycling-events/142", "kind": "第三方" },
+    { "label": "CT Yeh｜一日雙塔 520K 路線攻略（GPS 軌跡統計，非大會路線檔）", "url": "https://ctyeh.com/routes/twin-towers-520", "kind": "第三方" }
   ]
 }
