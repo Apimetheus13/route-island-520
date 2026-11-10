@@ -11,6 +11,8 @@
   - `eta`（選填）：寫了就用固定值，不寫就依所選速度推算
   - `conflict`（選填）：來源不一致時為 true，卡片會用橘色框提示
   - `unverified`（選填）：未查證項目清單
+- 路線點（v3）額外欄位：`no`（序號）、`short`（島上顯示的短名）、`tags`（checkpoint / store / meal / backup / other，可多個）、`userSeg`（與上一點距離，使用者規劃值）、`cp`（官方站號）、`brand`、`addr`、`lat`/`lng`、`hours`、`amenities`、`src`（地址／座標來源）、`gmap`、`nav`（Google 地圖搜尋與導航連結）。
+  - 只有官方檢查站有 `close`；其他點不會出現關門提醒。
 - `sources`：資料來源（`label`、`url`、`kind`），只接受 https 連結。
 
 資料擷取日：2026-11-10。來源：中華民國自行車協會 https://taiwanbike.org/index.php/688
