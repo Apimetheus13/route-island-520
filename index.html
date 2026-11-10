@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#103a44">
-<title>路線島｜長程騎乘休息站一覽（示範）</title>
+<title>雙塔520 路線島｜2026 TBA 雙塔520 檢查站與關門時間（非官方整理）</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22%3E%3Cellipse cx=%2216%22 cy=%2218%22 rx=%2214%22 ry=%229%22 fill=%22%23f3e6c4%22/%3E%3Cellipse cx=%2216%22 cy=%2222%22 rx=%2214%22 ry=%225%22 fill=%22%233f8f6a%22/%3E%3C/svg%3E">
 <link rel="stylesheet" href="styles.css">
 </head>
@@ -13,8 +13,8 @@
   <div class="brand">
     <span class="brand-mark" aria-hidden="true"></span>
     <div>
-      <h1>路線島</h1>
-      <p class="sub">長程騎乘休息站一覽・由北到南</p>
+      <h1>雙塔520 路線島</h1>
+      <p class="sub">2026/11/14 富貴角 → 鵝鑾鼻・非官方整理</p>
     </div>
   </div>
   <button id="warnToggle" class="switch" role="switch" aria-checked="false" type="button">
@@ -27,26 +27,89 @@
   <strong>示範資料</strong><span id="demoNote">站名、里程與時間皆為虛構，請勿作為騎乘依據。</span>
 </div>
 
+<div class="notice" role="note">
+  <strong>非官方</strong><span>個人整理的參考頁，資料摘自主辦單位網站（2026-11-10 擷取）。主辦單位註明路線為初步規劃，一切以中華民國自行車協會最新公告、行前通知與現場指示為準。</span>
+</div>
+
 <main id="main">
+  <section class="overview" aria-labelledby="ovTitle">
+    <h2 id="ovTitle" class="section-title">活動概要</h2>
+    <dl class="ov-grid">
+      <div><dt>日期・出發</dt><dd>2026/11/14（六）00:00</dd></div>
+      <div><dt>集合・起點</dt><dd>新北石門 富貴角・楓林橋</dd></div>
+      <div><dt>全程關門</dt><dd>11/15 06:00（合格時間 30 小時）</dd></div>
+      <div><dt>官方里程</dt><dd>520 公里</dd></div>
+      <div><dt>計時</dt><dd>晶片計時（RFID）</dd></div>
+      <div><dt>總爬升</dt><dd>約 1,200 公尺 <small>第三方 GPS 估算，非官方</small></dd></div>
+    </dl>
+    <p class="route-line"><b>路線（官方初步規劃）</b>富貴角燈塔・楓林橋 → 淡金公路（台2線）→ 淡水 → 淡江大橋 → 八里（台15線）→ 新竹香山（台61線）→ 台中、彰化、雲林、嘉義、台南、高雄、屏東（台17線）→ 水底寮（台1線）→ 楓港（台26線）→ 墾丁 → 鵝鑾鼻</p>
+  </section>
+
+  <section class="pace" aria-labelledby="paceTitle">
+    <h2 id="paceTitle" class="section-title">我的平均速度（含休息）</h2>
+    <div id="paceOpts" class="pace-opts" role="group" aria-labelledby="paceTitle"></div>
+    <p id="paceSummary" class="hint"></p>
+    <p class="hint">依官方里程與關門時間推算，要每站都趕上關門，全程平均（含休息）至少約 <b>17.6 km/h</b>，最吃緊的是東港站。</p>
+  </section>
+
   <div id="statusArea" aria-live="polite"></div>
 
   <div id="content" class="content" hidden>
     <section class="chain-section" aria-labelledby="chainTitle">
-      <h2 id="chainTitle" class="section-title">島鏈地圖</h2>
-      <p class="hint">點一座島查看休息站。島之間的線是路段，數字是距離。</p>
+      <h2 id="chainTitle" class="section-title">檢查站島鏈</h2>
+      <p class="hint">點一座島查看檢查站。島之間的線是路段，數字是距離（依官方「大約累計里程」相減）。示意圖，非地圖比例。</p>
       <div id="chain" class="chain"></div>
-      <p id="legend" class="legend" hidden><span class="legend-swatch" aria-hidden="true"></span>橘色：建議抵達時間距關門不到 <b id="legendMin">30</b> 分鐘</p>
+      <p id="legend" class="legend" hidden><span class="legend-swatch" aria-hidden="true"></span>橘色：預估抵達時間距關門不到 <b id="legendMin">30</b> 分鐘</p>
     </section>
 
     <section class="list-section" aria-labelledby="listTitle">
-      <h2 id="listTitle" class="section-title">站點清單</h2>
+      <h2 id="listTitle" class="section-title">檢查站清單</h2>
       <ol id="stationList" class="station-list"></ol>
     </section>
   </div>
+
+  <section class="rules" aria-labelledby="rulesTitle">
+    <h2 id="rulesTitle" class="section-title">規則與裝備重點（摘自官方簡章）</h2>
+    <ul class="bullets">
+      <li>出發前自檢：安全帽、前後煞車、有效車前燈與後車燈、帽尾帶；反光背心為「建議」。</li>
+      <li>晶片號碼帽貼貼在安全帽正前方、帽尾帶繫在安全帽後方、坐管號碼牌固定於坐管；出發日務必帶齊，現場不補發。</li>
+      <li>每個檢查站都要確實通過晶片感應區；逾時抵達檢查站者一律自行安排回程。</li>
+      <li>全程無交通管制，重要路口以指示牌或工作人員指引。</li>
+      <li>檢查站備有簡易補給品，終點提供簡易餐點（各站實際品項未查證）。</li>
+      <li>行李托運：僅收個人簡易衣物（背包）與攜車袋，不收登機箱；鑰匙、健保卡隨身。</li>
+      <li>機械故障或身體不適：與協會聯繫，工作人員安置到最近檢查站或便利商店；收容車僅區間收容，救護車全程隨行。</li>
+      <li>雨天照常進行；天災等不可辦理情形原則上擇期順延。</li>
+    </ul>
+    <h3 class="sub-title">私人補給車（官方五條規定）</h3>
+    <ul class="bullets">
+      <li>定點補給，選明顯空曠處，不影響其他參加者與用路人。</li>
+      <li>不可慢速跟隨補給或拍照。</li>
+      <li>避免設在檢查站或路狹路段。</li>
+      <li>因任何因素乘坐私人補給車者，勿通過檢查站計時系統。</li>
+      <li>維護補給地點整潔與安寧（如加油站、民宅前）。</li>
+    </ul>
+    <h3 class="sub-title">接駁車（加購者）</h3>
+    <ul class="bullets">
+      <li>去程：台北中正紀念堂（杭州南路）11/13 20:30、台中黎新公園（龍德路）11/13 18:00 發車往富貴角，免拆車、逾時不候。</li>
+      <li>回程：墾丁海山露營區 11/15 00:30–06:30 發往中正紀念堂、黎新公園；往高雄左營高鐵站 00:30–06:00。須攜車袋、人滿發車。</li>
+      <li>官方公告：已加購者當日至現場服務台登記核對後領取車券，未收到車券屬正常情況。</li>
+    </ul>
+    <h3 class="sub-title">聯絡</h3>
+    <ul class="bullets">
+      <li>中華民國自行車協會 電話 02-2935-0205（協會辦公室，官網頁尾）。</li>
+      <li>活動當天緊急電話：官方網頁未公開，請看大會寄送的物資或行前資訊（未查證）。</li>
+    </ul>
+  </section>
+
+  <section class="sources" aria-labelledby="srcTitle">
+    <h2 id="srcTitle" class="section-title">資料來源</h2>
+    <p class="hint">擷取日期：<span id="retrieved">2026-11-10</span>。標「第三方」者非主辦單位資料，僅供交叉比對。</p>
+    <ul id="sourceList" class="source-list"></ul>
+  </section>
 </main>
 
 <footer class="footer">
-  <p>「路線島」為個人製作的非官方示範頁，與任何賽事主辦單位無關。</p>
+  <p>「雙塔520 路線島」為個人製作的非官方參考頁，與主辦單位無關，未使用主辦單位圖片或標誌。資料可能有誤或已變更，請以主辦單位最新公告為準。</p>
 </footer>
 
 <div id="sheetBackdrop" class="sheet-backdrop" hidden></div>
@@ -60,12 +123,17 @@
   <dl class="facts">
     <div><dt>累積里程</dt><dd id="fKm"></dd></div>
     <div><dt>與上一站距離</dt><dd id="fGap"></dd></div>
-    <div><dt>建議抵達時間</dt><dd id="fEta"></dd></div>
+    <div><dt>預估抵達</dt><dd id="fEta"></dd></div>
     <div><dt>關門時間</dt><dd id="fClose"></dd></div>
+    <div><dt>地點</dt><dd id="fPlace"></dd></div>
+    <div><dt>公路樁號</dt><dd id="fRoad"></dd></div>
+    <div class="wide"><dt>趕上關門所需平均速度</dt><dd id="fNeed"></dd></div>
   </dl>
-  <h3 class="supplies-title">補給項目</h3>
+  <p id="fNote" class="sheet-note" hidden></p>
+  <p id="fUnverified" class="sheet-unverified" hidden></p>
+  <h3 class="supplies-title">補給／服務</h3>
   <ul id="fSupplies" class="supplies"></ul>
-  <p class="sheet-demo">示範資料，非實際站點資訊。</p>
+  <p id="fSource" class="sheet-demo"></p>
 </section>
 
 <script src="app.js"></script>

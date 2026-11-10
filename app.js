@@ -19,7 +19,7 @@
   var statusArea = $('statusArea'), content = $('content'), chain = $('chain'), list = $('stationList');
   var sheet = $('sheet'), backdrop = $('sheetBackdrop'), toggle = $('warnToggle');
 
-  var state = { stations: [], warnMinutes: CONFIG.defaultWarnMinutes, warnOn: false, openId: null, opener: null, savedY: 0 };
+  var state = { stations: [], meta: {}, warnMinutes: CONFIG.defaultWarnMinutes, warnOn: false, openId: null, opener: null, savedY: 0, pace: 20 };
 
   // ---------- 工具 ----------
   function toMin(hhmm) {
@@ -31,10 +31,25 @@
     if (isNaN(t)) return '—';
     var day = Math.floor(t / 1440), r = t % 1440;
     var s = String(Math.floor(r / 60)).padStart(2, '0') + ':' + String(r % 60).padStart(2, '0');
+    var base = state.meta && state.meta.startDate ? new Date(state.meta.startDate + 'T00:00:00') : null;
+    if (base && !isNaN(base)) { base.setDate(base.getDate() + day); return (base.getMonth() + 1) + '/' + base.getDate() + ' ' + s; }
     return day > 0 ? '隔日 ' + s : s;
   }
   function fmtKm(n) { return (Math.round(n * 10) / 10) + ' 公里'; }
-  function slack(s) { return toMin(s.close) - toMin(s.eta); }
+  function minToHHMM(m) { m = Math.round(m); return Math.floor(m / 60) + ':' + String(m % 60).padStart(2, '0'); }
+  // 預估抵達：資料有 eta 就用；否則依所選平均速度（含休息）由出發時間推算
+  function etaOf(s) {
+    if (s.eta) return s.eta;
+    var start = toMin(state.meta.startTime || '00:00');
+    if (isNaN(start) || !state.pace) return '';
+    return minToHHMM(start + s.km / state.pace * 60);
+  }
+  // 要在關門前抵達所需的最低平均速度（含休息）
+  function needSpeed(s) {
+    var h = (toMin(s.close) - toMin(state.meta.startTime || '00:00')) / 60;
+    return s.km > 0 && h > 0 ? Math.round(s.km / h * 10) / 10 : null;
+  }
+  function slack(s) { return toMin(s.close) - toMin(etaOf(s)); }
   function isTight(s) { var d = slack(s); return !isNaN(d) && d < state.warnMinutes; }
   function el(tag, cls, text) { var e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; }
   function safeDataPath(p) { return p && /^[\w\-\/]+\.json$/.test(p) && p.indexOf('..') < 0 ? p : null; }
@@ -67,7 +82,10 @@
 
   function onData(json) {
     var meta = json.meta || {};
+    state.meta = meta;
     state.stations = json.stations.slice();
+    setupPace(meta);
+    renderSources(json.sources || []);
     if (typeof meta.closeWarningMinutes === 'number') state.warnMinutes = meta.closeWarningMinutes;
     $('legendMin').textContent = state.warnMinutes;
     if (meta.isDemo !== false) {
@@ -183,7 +201,7 @@
       main.appendChild(el('span', 'row-meta', '累積 ' + fmtKm(s.km) + (i > 0 ? '・距上一站 ' + fmtKm(s.km - state.stations[i - 1].km) : '・起點')));
       btn.appendChild(main);
       var side = el('span', 'row-side');
-      side.appendChild(el('b', null, fmtTime(s.eta)));
+      side.appendChild(el('b', null, '預估 ' + fmtTime(etaOf(s))));
       side.appendChild(document.createTextNode('關門 ' + fmtTime(s.close)));
       btn.appendChild(side);
       btn.addEventListener('click', function () { openSheet(s.id, btn); });
@@ -198,8 +216,20 @@
     $('sheetTitle').textContent = s.name;
     $('fKm').textContent = fmtKm(s.km);
     $('fGap').textContent = i > 0 ? fmtKm(s.km - state.stations[i - 1].km) : '起點';
-    $('fEta').textContent = fmtTime(s.eta);
+    $('fEta').textContent = fmtTime(etaOf(s)) + (s.eta ? '' : '（以 ' + state.pace + ' km/h 推算）');
     $('fClose').textContent = fmtTime(s.close);
+    $('fPlace').textContent = [s.region, s.place].filter(Boolean).join('・') || '—';
+    $('fRoad').textContent = s.road || '—';
+    var ns = needSpeed(s);
+    $('fNeed').textContent = ns ? ns + ' km/h（含休息）' : '—';
+    var note = $('fNote');
+    note.textContent = s.note || '';
+    note.hidden = !s.note;
+    note.classList.toggle('conflict', !!s.conflict);
+    var uv = $('fUnverified');
+    uv.textContent = s.unverified && s.unverified.length ? '未查證：' + s.unverified.join('、') : '';
+    uv.hidden = !uv.textContent;
+    $('fSource').textContent = s.source === 'official' ? '資料來源：主辦單位網站（2026-11-10 擷取），預估抵達與所需均速為本頁推算。' : '資料來源：未查證';
     var ul = $('fSupplies'); ul.innerHTML = '';
     (s.supplies && s.supplies.length ? s.supplies : ['（未提供）']).forEach(function (t) { ul.appendChild(el('li', null, t)); });
     var warn = $('sheetWarn');
@@ -207,8 +237,8 @@
     if (state.warnOn && isTight(s)) {
       warn.hidden = false;
       warn.textContent = d < 0
-        ? '關門提醒：建議抵達時間已晚於關門時間，請提早出發。'
-        : '關門提醒：建議抵達時間距關門只剩 ' + d + ' 分鐘（門檻 ' + state.warnMinutes + ' 分鐘），請留意配速。';
+        ? '關門提醒：以目前選的平均速度，預估抵達已晚於關門時間。'
+        : '關門提醒：預估抵達時間距關門只剩 ' + d + ' 分鐘（門檻 ' + state.warnMinutes + ' 分鐘），請留意配速。';
     } else warn.hidden = true;
     sheet.setAttribute('data-station', s.id);
   }
@@ -248,6 +278,52 @@
     Array.prototype.forEach.call(chain.querySelectorAll('.island'), function (b) {
       b.classList.toggle('active', b.getAttribute('data-id') === state.openId);
     });
+  }
+
+  // ---------- 配速選擇 ----------
+  function setupPace(meta) {
+    var box = $('paceOpts');
+    var opts = Array.isArray(meta.paceOptions) && meta.paceOptions.length ? meta.paceOptions : [18, 20, 22, 24];
+    var saved = NaN;
+    try { saved = parseFloat(localStorage.getItem('routeIsland.pace')); } catch (e) {}
+    state.pace = opts.indexOf(saved) >= 0 ? saved : (meta.defaultPace || opts[0]);
+    box.innerHTML = '';
+    opts.forEach(function (v) {
+      var b = el('button', 'pace-btn', v + ' km/h'); b.type = 'button';
+      b.setAttribute('data-pace', v);
+      b.setAttribute('aria-pressed', String(v === state.pace));
+      b.addEventListener('click', function () {
+        state.pace = v;
+        try { localStorage.setItem('routeIsland.pace', String(v)); } catch (e) {}
+        Array.prototype.forEach.call(box.children, function (c) { c.setAttribute('aria-pressed', String(+c.getAttribute('data-pace') === v)); });
+        updatePaceSummary();
+        if (state.stations.length) renderAll();
+      });
+      box.appendChild(b);
+    });
+    updatePaceSummary();
+  }
+  function updatePaceSummary() {
+    var last = state.stations[state.stations.length - 1];
+    if (!last) return;
+    var hrs = last.km / state.pace;
+    var limit = state.meta.timeLimitHours;
+    $('paceSummary').textContent = '以平均 ' + state.pace + ' km/h（含休息）估算，' + last.km + ' 公里約需 ' +
+      (Math.round(hrs * 10) / 10) + ' 小時，預估 ' + fmtTime(etaOf(last)) + ' 抵達' +
+      (limit ? (hrs <= limit ? '，在 ' + limit + ' 小時時限內。' : '，超過 ' + limit + ' 小時時限。') : '。');
+  }
+  function renderSources(src) {
+    var ul = $('sourceList'); if (!ul) return;
+    ul.innerHTML = '';
+    src.forEach(function (x) {
+      if (!x || !/^https:\/\//.test(x.url || '')) return;
+      var li = el('li');
+      if (x.kind) li.appendChild(el('span', 'src-kind', x.kind));
+      var a = el('a', null, x.label || x.url); a.href = x.url; a.target = '_blank'; a.rel = 'noopener noreferrer';
+      li.appendChild(a);
+      ul.appendChild(li);
+    });
+    if (state.meta.retrieved) $('retrieved').textContent = state.meta.retrieved;
   }
 
   // ---------- 事件 ----------

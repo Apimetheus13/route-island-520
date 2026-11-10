@@ -171,3 +171,36 @@ main { padding: 12px 16px 24px; max-width: 1100px; margin: 0 auto; }
   .sheet, .sheet-backdrop, .island, .switch-thumb { transition: none; }
   .spinner, .skeleton { animation: none; }
 }
+
+/* ---- v2：真實資料版 ---- */
+.notice {
+  display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: baseline;
+  padding: 8px 16px; background: #e9f4f2; border-bottom: 1px solid #b9dcd6; font-size: .82rem;
+}
+.notice strong { background: var(--sea); color: #fff; padding: 1px 8px; border-radius: 6px; font-size: .78rem; }
+.overview, .pace, .rules, .sources { margin: 0 0 16px; }
+.ov-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin: 6px 0 8px; }
+.ov-grid > div { background: var(--card); border-radius: 10px; padding: 8px 10px; box-shadow: 0 1px 0 rgba(0,0,0,.06); }
+.ov-grid dt { font-size: .72rem; color: var(--muted); }
+.ov-grid dd { margin: 0; font-weight: 600; font-size: .9rem; overflow-wrap: anywhere; }
+.ov-grid small { display: block; font-weight: 400; font-size: .7rem; color: var(--muted); }
+.route-line { font-size: .82rem; margin: 0; line-height: 1.7; }
+.route-line b { display: block; font-size: .8rem; color: var(--muted); }
+.pace-opts { display: flex; flex-wrap: wrap; gap: 8px; margin: 6px 0; }
+.pace-btn {
+  min-height: var(--tap); min-width: var(--tap); padding: 0 14px; border-radius: 999px; cursor: pointer;
+  border: 1px solid var(--sea-2); background: var(--card); color: var(--sea); font-weight: 600;
+}
+.pace-btn[aria-pressed="true"] { background: var(--sea); color: #fff; }
+.bullets { margin: 4px 0 8px; padding-left: 1.2em; font-size: .85rem; }
+.bullets li { margin: 3px 0; }
+.sub-title { font-size: .92rem; margin: 12px 0 2px; }
+.source-list { list-style: none; padding: 0; margin: 4px 0; font-size: .82rem; }
+.source-list li { margin: 0 0 6px; overflow-wrap: anywhere; }
+.source-list a { color: var(--sea-2); display: inline-block; min-height: var(--tap); padding: 10px 0; }
+.src-kind { display: inline-block; font-size: .7rem; padding: 0 6px; margin-right: 6px; border-radius: 6px; background: var(--sand); }
+.facts .wide { grid-column: 1 / -1; }
+.sheet-note { margin: 10px 0 0; font-size: .82rem; background: #f4f7f7; padding: 8px 10px; border-radius: 8px; }
+.sheet-note.conflict { background: var(--warn-soft); border-left: 4px solid var(--warn); }
+.sheet-unverified { margin: 6px 0 0; font-size: .78rem; color: #8a4b12; }
+@media (min-width: 720px) { .ov-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
