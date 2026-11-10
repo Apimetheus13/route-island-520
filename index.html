@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="zh-Hant-TW">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#103a44">
+<title>路線島｜長程騎乘休息站一覽（示範）</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22%3E%3Cellipse cx=%2216%22 cy=%2218%22 rx=%2214%22 ry=%229%22 fill=%22%23f3e6c4%22/%3E%3Cellipse cx=%2216%22 cy=%2222%22 rx=%2214%22 ry=%225%22 fill=%22%233f8f6a%22/%3E%3C/svg%3E">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header class="topbar">
+  <div class="brand">
+    <span class="brand-mark" aria-hidden="true"></span>
+    <div>
+      <h1>路線島</h1>
+      <p class="sub">長程騎乘休息站一覽・由北到南</p>
+    </div>
+  </div>
+  <button id="warnToggle" class="switch" role="switch" aria-checked="false" type="button">
+    <span class="switch-track" aria-hidden="true"><span class="switch-thumb"></span></span>
+    <span class="switch-label">關門提醒</span>
+  </button>
+</header>
+
+<div id="demoBanner" class="demo-banner" hidden>
+  <strong>示範資料</strong><span id="demoNote">站名、里程與時間皆為虛構，請勿作為騎乘依據。</span>
+</div>
+
+<main id="main">
+  <div id="statusArea" aria-live="polite"></div>
+
+  <div id="content" class="content" hidden>
+    <section class="chain-section" aria-labelledby="chainTitle">
+      <h2 id="chainTitle" class="section-title">島鏈地圖</h2>
+      <p class="hint">點一座島查看休息站。島之間的線是路段，數字是距離。</p>
+      <div id="chain" class="chain"></div>
+      <p id="legend" class="legend" hidden><span class="legend-swatch" aria-hidden="true"></span>橘色：建議抵達時間距關門不到 <b id="legendMin">30</b> 分鐘</p>
+    </section>
+
+    <section class="list-section" aria-labelledby="listTitle">
+      <h2 id="listTitle" class="section-title">站點清單</h2>
+      <ol id="stationList" class="station-list"></ol>
+    </section>
+  </div>
+</main>
+
+<footer class="footer">
+  <p>「路線島」為個人製作的非官方示範頁，與任何賽事主辦單位無關。</p>
+</footer>
+
+<div id="sheetBackdrop" class="sheet-backdrop" hidden></div>
+<section id="sheet" class="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle" hidden>
+  <div class="sheet-handle" aria-hidden="true"></div>
+  <div class="sheet-head">
+    <h2 id="sheetTitle">站名</h2>
+    <button id="sheetClose" class="icon-btn" type="button" aria-label="關閉站點卡片">✕</button>
+  </div>
+  <p id="sheetWarn" class="sheet-warn" hidden></p>
+  <dl class="facts">
+    <div><dt>累積里程</dt><dd id="fKm"></dd></div>
+    <div><dt>與上一站距離</dt><dd id="fGap"></dd></div>
+    <div><dt>建議抵達時間</dt><dd id="fEta"></dd></div>
+    <div><dt>關門時間</dt><dd id="fClose"></dd></div>
+  </dl>
+  <h3 class="supplies-title">補給項目</h3>
+  <ul id="fSupplies" class="supplies"></ul>
+  <p class="sheet-demo">示範資料，非實際站點資訊。</p>
+</section>
+
+<script src="app.js"></script>
+</body>
+</html>

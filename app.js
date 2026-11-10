@@ -1,0 +1,290 @@
+/* 路線島 — 純前端，無外部相依。 */
+(function () {
+  'use strict';
+
+  var CONFIG = {
+    dataUrl: 'data/stations.json',
+    emptyUrl: 'data/empty.json',
+    defaultWarnMinutes: 30,   // 關門提醒門檻（分鐘），stations.json 的 meta.closeWarningMinutes 會覆蓋
+    rowHeight: 96,            // 島鏈每站垂直間距（px）
+    chainPad: 56,
+    xPattern: [0.5, 0.27, 0.68, 0.36, 0.72, 0.3, 0.62, 0.28, 0.55] // 島的橫向位置（容器寬度比例）
+  };
+
+  var params = new URLSearchParams(location.search);
+  var forcedState = params.get('state');          // loading | empty | error
+  var forcedErrorPending = forcedState === 'error'; // 只讓第一次載入失敗，重試會正常載入
+
+  var $ = function (id) { return document.getElementById(id); };
+  var statusArea = $('statusArea'), content = $('content'), chain = $('chain'), list = $('stationList');
+  var sheet = $('sheet'), backdrop = $('sheetBackdrop'), toggle = $('warnToggle');
+
+  var state = { stations: [], warnMinutes: CONFIG.defaultWarnMinutes, warnOn: false, openId: null, opener: null, savedY: 0 };
+
+  // ---------- 工具 ----------
+  function toMin(hhmm) {
+    var m = /^(\d{1,2}):(\d{2})$/.exec(String(hhmm || ''));
+    return m ? (+m[1]) * 60 + (+m[2]) : NaN;
+  }
+  function fmtTime(hhmm) {
+    var t = toMin(hhmm);
+    if (isNaN(t)) return '—';
+    var day = Math.floor(t / 1440), r = t % 1440;
+    var s = String(Math.floor(r / 60)).padStart(2, '0') + ':' + String(r % 60).padStart(2, '0');
+    return day > 0 ? '隔日 ' + s : s;
+  }
+  function fmtKm(n) { return (Math.round(n * 10) / 10) + ' 公里'; }
+  function slack(s) { return toMin(s.close) - toMin(s.eta); }
+  function isTight(s) { var d = slack(s); return !isNaN(d) && d < state.warnMinutes; }
+  function el(tag, cls, text) { var e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; }
+  function safeDataPath(p) { return p && /^[\w\-\/]+\.json$/.test(p) && p.indexOf('..') < 0 ? p : null; }
+
+  // ---------- 資料 ----------
+  function validate(json) {
+    if (!json || !Array.isArray(json.stations)) throw new Error('資料格式不正確：缺少 stations 陣列');
+    json.stations.forEach(function (s, i) {
+      if (!s || typeof s.name !== 'string' || typeof s.km !== 'number') throw new Error('第 ' + (i + 1) + ' 站資料不完整');
+    });
+    return json;
+  }
+
+  function load() {
+    renderLoading();
+    if (forcedState === 'loading') return; // 測試用：停在載入中
+    var url = forcedState === 'empty' ? CONFIG.emptyUrl : (safeDataPath(params.get('data')) || CONFIG.dataUrl);
+    var p;
+    if (forcedErrorPending) {
+      forcedErrorPending = false;
+      p = new Promise(function (_, rej) { setTimeout(function () { rej(new Error('模擬讀取失敗（?state=error）')); }, 400); });
+    } else {
+      p = fetch(url, { cache: 'no-store' }).then(function (r) {
+        if (!r.ok) throw new Error('讀取失敗（HTTP ' + r.status + '）');
+        return r.json();
+      }).then(validate);
+    }
+    p.then(onData, renderError);
+  }
+
+  function onData(json) {
+    var meta = json.meta || {};
+    state.stations = json.stations.slice();
+    if (typeof meta.closeWarningMinutes === 'number') state.warnMinutes = meta.closeWarningMinutes;
+    $('legendMin').textContent = state.warnMinutes;
+    if (meta.isDemo !== false) {
+      $('demoBanner').hidden = false;
+      if (meta.note) $('demoNote').textContent = meta.note;
+    }
+    if (!state.stations.length) return renderEmpty();
+    statusArea.innerHTML = '';
+    content.hidden = false;
+    renderAll();
+  }
+
+  // ---------- 狀態畫面 ----------
+  function renderLoading() {
+    content.hidden = true;
+    statusArea.innerHTML = '';
+    var box = el('div', 'state'); box.setAttribute('data-state', 'loading'); box.setAttribute('role', 'status');
+    box.appendChild(el('div', 'spinner'));
+    box.appendChild(el('h2', null, '載入站點資料中…'));
+    box.appendChild(el('div', 'skeleton')); box.appendChild(el('div', 'skeleton'));
+    statusArea.appendChild(box);
+  }
+  function renderEmpty() {
+    content.hidden = true;
+    statusArea.innerHTML = '';
+    var box = el('div', 'state'); box.setAttribute('data-state', 'empty');
+    box.appendChild(el('div', 'state-icon', '🏝️'));
+    box.appendChild(el('h2', null, '目前沒有站點資料'));
+    box.appendChild(el('p', null, '資料檔裡還沒有任何休息站。請在 data/stations.json 加入站點後重新整理。'));
+    var b = el('button', 'btn', '重新整理'); b.type = 'button';
+    b.addEventListener('click', function () { forcedState = null; load(); });
+    box.appendChild(b);
+    statusArea.appendChild(box);
+  }
+  function renderError(err) {
+    content.hidden = true;
+    statusArea.innerHTML = '';
+    var box = el('div', 'state'); box.setAttribute('data-state', 'error'); box.setAttribute('role', 'alert');
+    box.appendChild(el('div', 'state-icon', '⚠️'));
+    box.appendChild(el('h2', null, '站點資料讀取失敗'));
+    box.appendChild(el('p', null, (err && err.message) || '發生未知錯誤'));
+    var b = el('button', 'btn', '重試'); b.type = 'button'; b.id = 'retryBtn';
+    b.addEventListener('click', load);
+    box.appendChild(b);
+    statusArea.appendChild(box);
+    b.focus({ preventScroll: true });
+  }
+
+  // ---------- 主畫面 ----------
+  function renderAll() { renderChain(); renderList(); $('legend').hidden = !state.warnOn; }
+
+  function renderChain() {
+    var st = state.stations, n = st.length;
+    var w = chain.clientWidth || 340;
+    var h = CONFIG.chainPad * 2 + (n - 1) * CONFIG.rowHeight;
+    chain.style.height = h + 'px';
+    chain.innerHTML = '';
+    var pts = st.map(function (s, i) {
+      var fx = CONFIG.xPattern[i % CONFIG.xPattern.length];
+      var x = Math.min(Math.max(fx * w, 60), w - 60);
+      return { x: x, y: CONFIG.chainPad + i * CONFIG.rowHeight };
+    });
+    var NS = 'http://www.w3.org/2000/svg';
+    var svg = document.createElementNS(NS, 'svg');
+    svg.setAttribute('viewBox', '0 0 ' + w + ' ' + h);
+    svg.setAttribute('aria-hidden', 'true');
+    chain.appendChild(svg);
+    for (var i = 1; i < n; i++) {
+      var a = pts[i - 1], b = pts[i];
+      var tight = state.warnOn && isTight(st[i]);
+      var path = document.createElementNS(NS, 'path');
+      var mx = (a.x + b.x) / 2 + (i % 2 ? 18 : -18);
+      path.setAttribute('d', 'M' + a.x + ' ' + a.y + ' Q' + mx + ' ' + ((a.y + b.y) / 2) + ' ' + b.x + ' ' + b.y);
+      path.setAttribute('class', 'seg' + (tight ? ' tight' : ''));
+      path.setAttribute('data-seg', st[i].id);
+      svg.appendChild(path);
+      var lab = el('span', 'seg-label' + (tight ? ' tight' : ''), fmtKm(st[i].km - st[i - 1].km));
+      lab.style.left = ((a.x + b.x) / 2 + (i % 2 ? 9 : -9)) + 'px';
+      lab.style.top = ((a.y + b.y) / 2) + 'px';
+      lab.setAttribute('data-seg-label', st[i].id);
+      chain.appendChild(lab);
+    }
+    st.forEach(function (s, i) {
+      var tight = state.warnOn && isTight(s);
+      var btn = el('button', 'island' + (tight ? ' tight' : '') + (state.openId === s.id ? ' active' : ''));
+      btn.type = 'button';
+      btn.style.left = pts[i].x + 'px';
+      btn.style.top = pts[i].y + 'px';
+      btn.setAttribute('data-id', s.id);
+      btn.setAttribute('aria-label', s.name + '，累積 ' + fmtKm(s.km) + (tight ? '，關門時間緊' : '') + '，開啟站點卡片');
+      btn.appendChild(el('span', 'i-name', s.name));
+      btn.appendChild(el('span', 'i-km', fmtKm(s.km)));
+      btn.addEventListener('click', function () { openSheet(s.id, btn); });
+      chain.appendChild(btn);
+    });
+    var cn = el('span', 'compass n', '▲ 北'), cs = el('span', 'compass s', '▼ 南');
+    chain.appendChild(cn); chain.appendChild(cs);
+  }
+
+  function renderList() {
+    list.innerHTML = '';
+    state.stations.forEach(function (s, i) {
+      var tight = state.warnOn && isTight(s);
+      var li = el('li');
+      var btn = el('button', 'row' + (tight ? ' tight' : ''));
+      btn.type = 'button';
+      btn.setAttribute('data-id', s.id);
+      btn.appendChild(el('span', 'row-badge', String(i + 1)));
+      var main = el('span', 'row-main');
+      var name = el('span', 'row-name', s.name);
+      if (tight) name.appendChild(el('span', 'tag-warn', '時間緊'));
+      main.appendChild(name);
+      main.appendChild(el('span', 'row-meta', '累積 ' + fmtKm(s.km) + (i > 0 ? '・距上一站 ' + fmtKm(s.km - state.stations[i - 1].km) : '・起點')));
+      btn.appendChild(main);
+      var side = el('span', 'row-side');
+      side.appendChild(el('b', null, fmtTime(s.eta)));
+      side.appendChild(document.createTextNode('關門 ' + fmtTime(s.close)));
+      btn.appendChild(side);
+      btn.addEventListener('click', function () { openSheet(s.id, btn); });
+      li.appendChild(btn);
+      list.appendChild(li);
+    });
+  }
+
+  // ---------- 站點卡片（島與清單共用） ----------
+  function fillSheet(s) {
+    var i = state.stations.indexOf(s);
+    $('sheetTitle').textContent = s.name;
+    $('fKm').textContent = fmtKm(s.km);
+    $('fGap').textContent = i > 0 ? fmtKm(s.km - state.stations[i - 1].km) : '起點';
+    $('fEta').textContent = fmtTime(s.eta);
+    $('fClose').textContent = fmtTime(s.close);
+    var ul = $('fSupplies'); ul.innerHTML = '';
+    (s.supplies && s.supplies.length ? s.supplies : ['（未提供）']).forEach(function (t) { ul.appendChild(el('li', null, t)); });
+    var warn = $('sheetWarn');
+    var d = slack(s);
+    if (state.warnOn && isTight(s)) {
+      warn.hidden = false;
+      warn.textContent = d < 0
+        ? '關門提醒：建議抵達時間已晚於關門時間，請提早出發。'
+        : '關門提醒：建議抵達時間距關門只剩 ' + d + ' 分鐘（門檻 ' + state.warnMinutes + ' 分鐘），請留意配速。';
+    } else warn.hidden = true;
+    sheet.setAttribute('data-station', s.id);
+  }
+
+  function openSheet(id, opener) {
+    var s = state.stations.find(function (x) { return x.id === id; });
+    if (!s) return;
+    var already = !sheet.hidden;
+    state.openId = id;
+    if (!already) {
+      state.opener = { inList: opener.classList.contains('row'), id: id };
+      state.savedY = window.scrollY;
+    }
+    fillSheet(s);
+    markActive();
+    if (already) return;
+    document.documentElement.classList.add('locked');
+    backdrop.hidden = false; sheet.hidden = false;
+    requestAnimationFrame(function () { backdrop.classList.add('open'); sheet.classList.add('open'); });
+    $('sheetClose').focus({ preventScroll: true });
+  }
+
+  function closeSheet() {
+    if (sheet.hidden) return;
+    sheet.classList.remove('open'); backdrop.classList.remove('open');
+    sheet.hidden = true; backdrop.hidden = true;
+    document.documentElement.classList.remove('locked');
+    window.scrollTo(0, state.savedY);
+    state.openId = null;
+    markActive();
+    var o = state.opener && (state.opener.inList ? list : chain).querySelector('[data-id="' + state.opener.id + '"]');
+    if (o) o.focus({ preventScroll: true });
+    window.scrollTo(0, state.savedY);
+  }
+
+  function markActive() {
+    Array.prototype.forEach.call(chain.querySelectorAll('.island'), function (b) {
+      b.classList.toggle('active', b.getAttribute('data-id') === state.openId);
+    });
+  }
+
+  // ---------- 事件 ----------
+  $('sheetClose').addEventListener('click', closeSheet);
+  backdrop.addEventListener('click', closeSheet);
+  document.addEventListener('keydown', function (e) {
+    if (sheet.hidden) return;
+    if (e.key === 'Escape') { e.preventDefault(); closeSheet(); return; }
+    if (e.key === 'Tab') { // 焦點留在卡片內
+      var f = sheet.querySelectorAll('button, [href], [tabindex]:not([tabindex="-1"])');
+      if (!f.length) return;
+      var first = f[0], last = f[f.length - 1];
+      if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+    }
+  });
+
+  toggle.addEventListener('click', function () {
+    state.warnOn = !state.warnOn;
+    toggle.setAttribute('aria-checked', String(state.warnOn));
+    try { localStorage.setItem('routeIsland.warnOn', state.warnOn ? '1' : '0'); } catch (e) {}
+    if (state.stations.length) {
+      renderAll(); // 觸發元素以 id 記錄，重繪後仍找得回來
+      var s = state.stations.find(function (x) { return x.id === state.openId; });
+      if (s && !sheet.hidden) fillSheet(s);
+    }
+  });
+  try { if (localStorage.getItem('routeIsland.warnOn') === '1') { state.warnOn = true; toggle.setAttribute('aria-checked', 'true'); } } catch (e) {}
+
+  var rT;
+  window.addEventListener('resize', function () {
+    clearTimeout(rT);
+    rT = setTimeout(function () { if (state.stations.length && !content.hidden) renderChain(); }, 120);
+  });
+
+  // 測試掛勾
+  window.__routeIsland = { state: state, config: CONFIG, isTight: isTight, reload: load };
+
+  load();
+})();
