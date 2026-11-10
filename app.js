@@ -38,16 +38,29 @@
   }
   function fmtKm(n) { return (Math.round(n * 10) / 10) + ' 公里'; }
   function minToHHMM(m) { m = Math.round(m); return Math.floor(m / 60) + ':' + String(m % 60).padStart(2, '0'); }
-  // 預估抵達：資料有 eta 就用；否則依所選平均速度（含休息）由出發時間推算
+  // 預估抵達 = 出發時間 + 騎乘時間（里程 ÷ 騎乘均速）+ 前面各點的建議休息（建議值，非官方）
+  function restOf(s) { return typeof s.rest === 'number' && s.rest > 0 ? s.rest : 0; }
+  function restBefore(s) {
+    var sum = 0;
+    for (var i = 0; i < state.stations.length && state.stations[i] !== s; i++) sum += restOf(state.stations[i]);
+    return sum;
+  }
+  function totalRest() { return state.stations.reduce(function (a, x) { return a + restOf(x); }, 0); }
+  function fmtDur(m) { m = Math.round(m); var h = Math.floor(m / 60), r = m % 60; return (h ? h + ' 小時' : '') + (h && r ? ' ' : '') + (r || !h ? r + ' 分' : ''); }
+  function restLabel(s) {
+    if (s.restMax) return restOf(s) + '–' + s.restMax + ' 分（需要時）';
+    return restOf(s) ? restOf(s) + ' 分' : '—';
+  }
   function etaOf(s) {
     if (s.eta) return s.eta;
     var start = toMin(state.meta.startTime || '00:00');
     if (isNaN(start) || !state.pace) return '';
-    return minToHHMM(start + s.km / state.pace * 60);
+    return minToHHMM(start + s.km / state.pace * 60 + restBefore(s));
   }
-  // 要在關門前抵達所需的最低平均速度（含休息）
+  function departOf(s) { var a = toMin(etaOf(s)); return isNaN(a) ? '' : minToHHMM(a + restOf(s)); }
+  // 照建議休息停留，要在關門前抵達所需的最低騎乘均速
   function needSpeed(s) {
-    var h = (toMin(s.close) - toMin(state.meta.startTime || '00:00')) / 60;
+    var h = (toMin(s.close) - toMin(state.meta.startTime || '00:00') - restBefore(s)) / 60;
     return s.km > 0 && h > 0 ? Math.round(s.km / h * 10) / 10 : null;
   }
   var TYPE_LABEL = { checkpoint: '官方檢查站', store: '超商', meal: '用餐', backup: '備援', other: '其他停靠點' };
@@ -217,6 +230,7 @@
       btn.appendChild(main);
       var side = el('span', 'row-side');
       side.appendChild(el('b', null, '預估 ' + fmtTime(etaOf(s))));
+      side.appendChild(el('span', 'row-rest', '休 ' + restLabel(s)));
       if (s.close) side.appendChild(document.createTextNode('關門 ' + fmtTime(s.close)));
       btn.appendChild(side);
       btn.addEventListener('click', function () { openSheet(s.id, btn); });
@@ -231,7 +245,9 @@
     $('sheetTitle').textContent = s.name;
     $('fKm').textContent = fmtKm(s.km);
     $('fGap').textContent = i > 0 ? fmtKm(s.km - state.stations[i - 1].km) : '起點';
-    $('fEta').textContent = fmtTime(etaOf(s)) + (s.eta ? '' : '（以 ' + state.pace + ' km/h 推算）');
+    $('fEta').textContent = fmtTime(etaOf(s)) + (s.eta ? '' : '（騎乘 ' + state.pace + ' km/h＋建議休息）');
+    $('fRest').textContent = restLabel(s) + (s.restNote ? '・' + s.restNote : '');
+    $('fDepart').textContent = restOf(s) ? fmtTime(departOf(s)) : '—';
     $('fClose').textContent = s.close ? fmtTime(s.close) : '無（非官方檢查站）';
     var tg = $('fTags'); tg.innerHTML = ''; tg.appendChild(tagChips(s));
     if (s.cp) tg.appendChild(el('span', 'chip c-cpno', s.cp));
@@ -245,7 +261,7 @@
     $('fNav').hidden = !nv; if (nv) $('fNav').href = nv;
     var ns = s.close ? needSpeed(s) : null;
     $('fNeedRow').hidden = !ns;
-    $('fNeed').textContent = ns ? ns + ' km/h（含休息）' : '—';
+    $('fNeed').textContent = ns ? '騎乘均速 ' + ns + ' km/h（照建議休息停留）' : '—';
     var note = $('fNote');
     note.textContent = s.note || '';
     note.hidden = !s.note;
@@ -308,7 +324,7 @@
     var box = $('paceOpts');
     var opts = Array.isArray(meta.paceOptions) && meta.paceOptions.length ? meta.paceOptions : [18, 20, 22, 24];
     var saved = NaN;
-    try { saved = parseFloat(localStorage.getItem('routeIsland.pace')); } catch (e) {}
+    try { saved = parseFloat(localStorage.getItem('routeIsland.movingPace')); } catch (e) {}
     state.pace = opts.indexOf(saved) >= 0 ? saved : (meta.defaultPace || opts[0]);
     box.innerHTML = '';
     opts.forEach(function (v) {
@@ -317,7 +333,7 @@
       b.setAttribute('aria-pressed', String(v === state.pace));
       b.addEventListener('click', function () {
         state.pace = v;
-        try { localStorage.setItem('routeIsland.pace', String(v)); } catch (e) {}
+        try { localStorage.setItem('routeIsland.movingPace', String(v)); } catch (e) {}
         Array.prototype.forEach.call(box.children, function (c) { c.setAttribute('aria-pressed', String(+c.getAttribute('data-pace') === v)); });
         updatePaceSummary();
         if (state.stations.length) renderAll();
@@ -329,13 +345,16 @@
   function updatePaceSummary() {
     var last = state.stations[state.stations.length - 1];
     if (!last) return;
-    var hrs = last.km / state.pace;
+    var rest = totalRest();
+    var hrs = last.km / state.pace + rest / 60;
+    if ($('restTotal')) $('restTotal').textContent = fmtDur(rest);
     var worst = null;
     state.stations.forEach(function (x) { var v = x.close ? needSpeed(x) : null; if (v && (!worst || v > worst.v)) worst = { v: v, s: x }; });
     if (worst && $('minSpeed')) { $('minSpeed').textContent = worst.v + ' km/h'; $('minSpeedAt').textContent = worst.s.short || worst.s.name; }
     var limit = state.meta.timeLimitHours;
-    $('paceSummary').textContent = '以平均 ' + state.pace + ' km/h（含休息）估算，' + last.km + ' 公里約需 ' +
-      (Math.round(hrs * 10) / 10) + ' 小時，預估 ' + fmtTime(etaOf(last)) + ' 抵達' +
+    $('paceSummary').textContent = '騎乘均速 ' + state.pace + ' km/h：騎乘約 ' + fmtDur(last.km / state.pace * 60) +
+      '＋建議休息 ' + fmtDur(rest) + '，總計約 ' + fmtDur(hrs * 60) + '，預估 ' + fmtTime(etaOf(last)) + ' 抵達' +
+      '（相當於含休息均速 ' + (Math.round(last.km / hrs * 10) / 10) + ' km/h）' +
       (limit ? (hrs <= limit ? '，在 ' + limit + ' 小時時限內。' : '，超過 ' + limit + ' 小時時限。') : '。');
   }
   function renderSources(src) {
