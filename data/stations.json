@@ -10,15 +10,17 @@
   "timeLimitHours": 30,
   "closeWarningMinutes": 30,
   "paceOptions": [
-   17,
-   18,
+   19,
    20,
    22,
-   24
+   24,
+   26
   ],
-  "defaultPace": 20,
-  "note": "路線點與里程為我的個人規劃；官方檢查站的關門時間摘自主辦單位網站（2026-11-10 擷取）。預估抵達依所選平均速度推算，非官方資料。",
-  "routeSource": "使用者自訂 21 點路線（里程為使用者規劃值，合計 503.9 公里）"
+  "defaultPace": 22,
+  "note": "路線點與里程為我的個人規劃；官方檢查站關門時間摘自主辦單位網站（2026-11-10 擷取）。休息時間為建議值（非官方），預估抵達以騎乘均速＋建議休息推算。",
+  "routeSource": "使用者自訂 21 點路線（里程為使用者規劃值，合計 503.9 公里）",
+  "paceMode": "moving",
+  "restIsSuggestion": true
  },
  "stations": [
   {
@@ -33,12 +35,15 @@
    "userSeg": 0,
    "cp": "官方站 0（起點）",
    "close": "00:30",
-   "lat": 25.298531,
-   "lng": 121.536725,
-   "src": "OpenStreetMap（燈塔位置）",
+   "lat": 25.298555,
+   "lng": 121.53665,
+   "src": "交通部觀光署 觀光資料（地址、座標）；出發點為楓林橋",
    "note": "官方 00:00 從楓林橋出發，本站關門 00:30。官方表列樁號 臺2線 25.0K。",
    "gmap": "https://www.google.com/maps/search/?api=1&query=%E5%AF%8C%E8%B2%B4%E8%A7%92%E7%87%88%E5%A1%94",
-   "nav": "https://www.google.com/maps/dir/?api=1&travelmode=bicycling&destination=25.298531%2C121.536725"
+   "nav": "https://www.google.com/maps/dir/?api=1&travelmode=bicycling&destination=25.298555%2C121.53665",
+   "addr": "新北市石門區富基里（台2線25公里處，往富基漁港內進入）",
+   "rest": 0,
+   "restNote": "起點，不計"
   },
   {
    "id": "P02",
@@ -54,7 +59,9 @@
    "lng": 121.395767,
    "src": "OpenStreetMap",
    "gmap": "https://www.google.com/maps/search/?api=1&query=%E5%85%AB%E9%87%8C%E8%A8%8A%E5%A1%98%E5%BB%A3%E5%A0%B4",
-   "nav": "https://www.google.com/maps/dir/?api=1&travelmode=bicycling&destination=25.143006%2C121.395767"
+   "nav": "https://www.google.com/maps/dir/?api=1&travelmode=bicycling&destination=25.143006%2C121.395767",
+   "rest": 5,
+   "restNote": "補水、整理"
   },
   {
    "id": "P03",
@@ -72,7 +79,9 @@
    "lng": 120.930845,
    "src": "全家便利商店官網門市查詢（2026-11-10 查詢）",
    "gmap": "https://www.google.com/maps/search/?api=1&query=%E5%85%A8%E5%AE%B6%20%E6%96%B0%E7%AB%B9%E6%B5%B7%E4%B8%8A%E8%8A%B1%E5%BA%97%20%E6%96%B0%E7%AB%B9%E5%B8%82%E5%8C%97%E5%8D%80%E5%A4%A9%E5%BA%9C%E8%B7%AF2%E6%AE%B51%E8%99%9F",
-   "nav": "https://www.google.com/maps/dir/?api=1&travelmode=bicycling&destination=24.839423%2C120.930845"
+   "nav": "https://www.google.com/maps/dir/?api=1&travelmode=bicycling&destination=24.839423%2C120.930845",
+   "rest": 10,
+   "restNote": "補給、廁所"
   },
   {
    "id": "P04",
@@ -88,10 +97,13 @@
    "close": "06:30",
    "lat": 24.778801,
    "lng": 120.914448,
-   "src": "OpenStreetMap",
+   "src": "觀光開放資料（地點描述）；座標：OpenStreetMap",
    "note": "官方：新竹市 風情海岸，臺61線 79K，官方大約累計 107 公里。",
-   "gmap": "https://www.google.com/maps/search/?api=1&query=%E6%96%B0%E7%AB%B9%E9%A2%A8%E6%83%85%E6%B5%B7%E5%B2%B8",
-   "nav": "https://www.google.com/maps/dir/?api=1&travelmode=bicycling&destination=24.778801%2C120.914448"
+   "gmap": "https://www.google.com/maps/search/?api=1&query=%E6%96%B0%E7%AB%B9%20%E9%A2%A8%E6%83%85%E6%B5%B7%E5%B2%B8",
+   "nav": "https://www.google.com/maps/dir/?api=1&travelmode=bicycling&destination=24.778801%2C120.914448",
+   "addr": "新竹市沿海十七公里海岸（官方樁號 臺61線 79K）",
+   "rest": 5,
+   "restNote": "官方檢查站：感應晶片、補水"
   },
   {
    "id": "P05",
@@ -114,7 +126,9 @@
    ],
    "src": "7-ELEVEN 電子地圖 emap.pcsc.com.tw（2026-11-10 查詢）",
    "gmap": "https://www.google.com/maps/search/?api=1&query=7-ELEVEN%20%E9%80%9A%E9%A4%A8%E9%96%80%E5%B8%82%20%E8%8B%97%E6%A0%97%E7%B8%A3%E9%80%9A%E9%9C%84%E9%8E%AE%E9%80%9A%E8%A5%BF%E9%87%8C%E4%B8%AD%E5%B1%B1%E8%B7%AF10%E8%99%9F",
-   "nav": "https://www.google.com/maps/dir/?api=1&travelmode=bicycling&destination=24.486745%2C120.678598"
+   "nav": "https://www.google.com/maps/dir/?api=1&travelmode=bicycling&destination=24.486745%2C120.678598",
+   "rest": 10,
+   "restNote": "補給、廁所"
   },
   {
    "id": "P06",
@@ -138,7 +152,9 @@
    ],
    "src": "7-ELEVEN 電子地圖 emap.pcsc.com.tw（2026-11-10 查詢）",
    "gmap": "https://www.google.com/maps/search/?api=1&query=7-ELEVEN%20%E5%BB%A3%E6%B4%BD%E9%96%80%E5%B8%82%20%E5%8F%B0%E4%B8%AD%E5%B8%82%E9%BE%8D%E4%BA%95%E5%8D%80%E8%A5%BF%E6%BF%B1%E8%B7%AF%E4%B8%89%E6%AE%B5247%E8%99%9F",
-   "nav": "https://www.google.com/maps/dir/?api=1&travelmode=bicycling&destination=24.219654%2C120.522945"
+   "nav": "https://www.google.com/maps/dir/?api=1&travelmode=bicycling&destination=24.219654%2C120.522945",
+   "rest": 25,
+   "restNote": "早餐"
   },
   {
    "id": "P07",
@@ -152,12 +168,15 @@
    "userSeg": 41.3,
    "cp": "官方站 2",
    "close": "13:30",
-   "lat": 23.954029,
-   "lng": 120.334081,
-   "src": "OpenStreetMap",
+   "lat": 23.953256,
+   "lng": 120.334073,
+   "src": "王功福海宮官網（地址、GPS 座標）",
    "note": "官方：彰化-王功 福海宮，臺17線 54.3K，官方大約累計 227 公里。",
-   "gmap": "https://www.google.com/maps/search/?api=1&query=%E5%BD%B0%E5%8C%96%E7%8E%8B%E5%8A%9F%E7%A6%8F%E6%B5%B7%E5%AE%AE",
-   "nav": "https://www.google.com/maps/dir/?api=1&travelmode=bicycling&destination=23.954029%2C120.334081"
+   "gmap": "https://www.google.com/maps/search/?api=1&query=%E7%8E%8B%E5%8A%9F%E7%A6%8F%E6%B5%B7%E5%AE%AE%20%E5%BD%B0%E5%8C%96%E7%B8%A3%E8%8A%B3%E8%8B%91%E9%84%89%E8%8A%B3%E6%BC%A2%E8%B7%AF%E7%8E%8B%E5%8A%9F%E6%AE%B52%E8%99%9F",
+   "nav": "https://www.google.com/maps/dir/?api=1&travelmode=bicycling&destination=23.953256%2C120.334073",
+   "addr": "彰化縣芳苑鄉民生村芳漢路王功段2號",
+   "rest": 10,
+   "restNote": "官方檢查站：感應晶片、補給"
   },
   {
    "id": "P08",
@@ -176,7 +195,9 @@
    "lng": 120.165072,
    "src": "全家便利商店官網門市查詢（2026-11-10 查詢）",
    "gmap": "https://www.google.com/maps/search/?api=1&query=%E5%85%A8%E5%AE%B6%20%E5%8F%A3%E6%B9%96%E4%B8%8B%E5%B4%99%E5%BA%97%20%E9%9B%B2%E6%9E%97%E7%B8%A3%E5%8F%A3%E6%B9%96%E9%84%89%E5%B4%99%E4%B8%AD%E6%9D%91%E4%B8%AD%E5%B1%B1%E8%B7%AF71%E8%99%9F",
-   "nav": "https://www.google.com/maps/dir/?api=1&travelmode=bicycling&destination=23.618798%2C120.165072"
+   "nav": "https://www.google.com/maps/dir/?api=1&travelmode=bicycling&destination=23.618798%2C120.165072",
+   "rest": 30,
+   "restNote": "午餐"
   },
   {
    "id": "P09",
@@ -192,10 +213,13 @@
    "close": "18:00",
    "lat": 23.381357,
    "lng": 120.168714,
-   "src": "OpenStreetMap",
+   "src": "雲嘉南濱海國家風景區管理處（地址）；座標：OpenStreetMap",
    "note": "官方：嘉義-布袋 布袋鹽山，臺17線 128K，官方大約累計 301 公里。",
-   "gmap": "https://www.google.com/maps/search/?api=1&query=%E5%98%89%E7%BE%A9%E5%B8%83%E8%A2%8B%E9%B9%BD%E5%B1%B1",
-   "nav": "https://www.google.com/maps/dir/?api=1&travelmode=bicycling&destination=23.381357%2C120.168714"
+   "gmap": "https://www.google.com/maps/search/?api=1&query=%E5%B8%83%E8%A2%8B%E9%B9%BD%E5%B1%B1%20%E5%98%89%E7%BE%A9%E7%B8%A3%E5%B8%83%E8%A2%8B%E9%8E%AE%E6%96%B0%E5%8E%9D%E4%BB%9413%E8%99%9F",
+   "nav": "https://www.google.com/maps/dir/?api=1&travelmode=bicycling&destination=23.381357%2C120.168714",
+   "addr": "嘉義縣布袋鎮新厝里新厝仔13號",
+   "rest": 5,
+   "restNote": "官方檢查站：感應晶片"
   },
   {
    "id": "P10",
@@ -217,7 +241,9 @@
    ],
    "src": "全家便利商店官網門市查詢（2026-11-10 查詢）",
    "gmap": "https://www.google.com/maps/search/?api=1&query=%E5%85%A8%E5%AE%B6%20%E5%B8%83%E8%A2%8B%E4%B8%8A%E6%B5%B7%E5%BA%97%20%E5%98%89%E7%BE%A9%E7%B8%A3%E5%B8%83%E8%A2%8B%E9%8E%AE%E4%B8%8A%E6%B5%B7%E8%B7%AF211%E8%99%9F",
-   "nav": "https://www.google.com/maps/dir/?api=1&travelmode=bicycling&destination=23.378867%2C120.16087"
+   "nav": "https://www.google.com/maps/dir/?api=1&travelmode=bicycling&destination=23.378867%2C120.16087",
+   "rest": 10,
+   "restNote": "補給、廁所（離檢查站 0.3 公里）"
   },
   {
    "id": "P11",
@@ -236,24 +262,36 @@
    "hours": "24 小時（OSM 標註，未經萊爾富官方確認）",
    "src": "OpenStreetMap（店名、地址、24/7 均為 OSM 標註）",
    "gmap": "https://www.google.com/maps/search/?api=1&query=%E8%90%8A%E7%88%BE%E5%AF%8C%20%E4%B8%83%E8%82%A1%E5%8F%B0%E6%BD%AD%E5%BA%97%20%E8%87%BA%E5%8D%97%E5%B8%82%E4%B8%83%E8%82%A1%E5%8D%80%E5%A4%A7%E6%BD%AD%E9%87%8C%E5%8F%B0%E6%BD%AD25%E8%99%9F",
-   "nav": "https://www.google.com/maps/dir/?api=1&travelmode=bicycling&destination=23.187633%2C120.132769"
+   "nav": "https://www.google.com/maps/dir/?api=1&travelmode=bicycling&destination=23.187633%2C120.132769",
+   "rest": 10,
+   "restNote": "補給"
   },
   {
    "id": "P12",
    "no": 12,
-   "name": "7-11 鯤魚門市",
-   "short": "7-11 鯤魚",
+   "name": "7-11 鯤鯓門市",
+   "short": "7-11 鯤鯓",
    "tags": [
     "store"
    ],
    "km": 344.2,
    "userSeg": 27.8,
    "brand": "7-ELEVEN",
-   "unverified": [
-    "7-ELEVEN 官方電子地圖查無「鯤魚」門市；台南市南區有一家「鯤鯓門市」（鯤鯓路20號），是否就是這家未查證，請自行確認"
+   "gmap": "https://www.google.com/maps/search/?api=1&query=7-ELEVEN%20%E9%AF%A4%E9%AF%93%E9%96%80%E5%B8%82%20%E5%8F%B0%E5%8D%97%E5%B8%82%E5%8D%97%E5%8D%80%E5%8D%97%E9%83%BD%E9%87%8C%E9%AF%A4%E9%AF%93%E8%B7%AF20%E8%99%9F",
+   "nav": "https://www.google.com/maps/dir/?api=1&travelmode=bicycling&destination=22.958995%2C120.186",
+   "addr": "台南市南區南都里鯤鯓路20號",
+   "lat": 22.958995,
+   "lng": 120.186,
+   "hours": "24 小時",
+   "amenities": [
+    "廁所",
+    "座位區",
+    "停車場"
    ],
-   "gmap": "https://www.google.com/maps/search/?api=1&query=7-ELEVEN%20%E9%AF%A4%E9%AD%9A%E9%96%80%E5%B8%82",
-   "nav": "https://www.google.com/maps/dir/?api=1&travelmode=bicycling&destination=7-ELEVEN%20%E9%AF%A4%E9%AD%9A%E9%96%80%E5%B8%82"
+   "src": "7-ELEVEN 電子地圖 emap.pcsc.com.tw（2026-11-10 查詢）",
+   "note": "你的清單寫「7-11 鯤魚門市」，7-ELEVEN 官方電子地圖查無此店；已更正為官方查得的「鯤鯓門市」（店號 968780）。里程沿用你的規劃值。",
+   "rest": 10,
+   "restNote": "補給、廁所"
   },
   {
    "id": "P13",
@@ -277,7 +315,9 @@
    ],
    "src": "7-ELEVEN 電子地圖 emap.pcsc.com.tw（2026-11-10 查詢）",
    "gmap": "https://www.google.com/maps/search/?api=1&query=7-ELEVEN%20%E4%BA%9E%E7%86%B1%E5%B8%B6%E9%96%80%E5%B8%82%20%E9%AB%98%E9%9B%84%E5%B8%82%E6%A2%93%E5%AE%98%E5%8D%80%E5%A4%A7%E8%88%8D%E5%8D%97%E8%B7%AF297%E8%99%9F299%E8%99%9F",
-   "nav": "https://www.google.com/maps/dir/?api=1&travelmode=bicycling&destination=22.740581%2C120.264047"
+   "nav": "https://www.google.com/maps/dir/?api=1&travelmode=bicycling&destination=22.740581%2C120.264047",
+   "rest": 30,
+   "restNote": "晚餐"
   },
   {
    "id": "P14",
@@ -292,9 +332,11 @@
    "addr": "高雄市左營區海功東路2號",
    "lat": 22.693661,
    "lng": 120.302261,
-   "src": "OpenStreetMap",
-   "gmap": "https://www.google.com/maps/search/?api=1&query=%E5%B1%8F%E5%B1%B1%E5%9C%8B%E5%B0%8F%20%E9%AB%98%E9%9B%84%E5%B8%82%E5%B7%A6%E7%87%9F%E5%8D%80%E6%B5%B7%E5%8A%9F%E6%9D%B1%E8%B7%AF2%E8%99%9F",
-   "nav": "https://www.google.com/maps/dir/?api=1&travelmode=bicycling&destination=22.693661%2C120.302261"
+   "src": "屏山國小學校網站（地址）；座標：OpenStreetMap",
+   "gmap": "https://www.google.com/maps/search/?api=1&query=%E9%AB%98%E9%9B%84%E5%B8%82%E5%B7%A6%E7%87%9F%E5%8D%80%E5%B1%8F%E5%B1%B1%E5%9C%8B%E6%B0%91%E5%B0%8F%E5%AD%B8%20%E6%B5%B7%E5%8A%9F%E6%9D%B1%E8%B7%AF2%E8%99%9F",
+   "nav": "https://www.google.com/maps/dir/?api=1&travelmode=bicycling&destination=22.693661%2C120.302261",
+   "rest": 5,
+   "restNote": "短暫停靠"
   },
   {
    "id": "P15",
@@ -317,7 +359,9 @@
    ],
    "src": "7-ELEVEN 電子地圖 emap.pcsc.com.tw（2026-11-10 查詢）",
    "gmap": "https://www.google.com/maps/search/?api=1&query=7-ELEVEN%20%E6%96%B0%E5%85%83%E5%98%89%E9%96%80%E5%B8%82%20%E9%AB%98%E9%9B%84%E5%B8%82%E6%9E%97%E5%9C%92%E5%8D%80%E6%B8%AF%E5%98%B4%E9%87%8C%E6%B2%BF%E6%B5%B7%E8%B7%AF%E4%B8%89%E6%AE%B5237%E8%99%9F",
-   "nav": "https://www.google.com/maps/dir/?api=1&travelmode=bicycling&destination=22.500086%2C120.386787"
+   "nav": "https://www.google.com/maps/dir/?api=1&travelmode=bicycling&destination=22.500086%2C120.386787",
+   "rest": 10,
+   "restNote": "補給、廁所"
   },
   {
    "id": "P16",
@@ -333,10 +377,13 @@
    "close": "24:30",
    "lat": 22.471427,
    "lng": 120.463391,
-   "src": "OpenStreetMap（東港慈濟靜思堂，沿海路 171 號；是否即檢查站確切位置未查證）",
+   "src": "慈濟相關官方網站（地址）；座標：OpenStreetMap。是否即檢查站確切位置未查證",
    "note": "官方：屏東-東港 東港慈濟，臺17線 247K，官方大約累計 430 公里。關門 11/15 00:30，是全程最吃緊的一站。",
-   "gmap": "https://www.google.com/maps/search/?api=1&query=%E5%B1%8F%E6%9D%B1%E6%9D%B1%E6%B8%AF%E6%85%88%E6%BF%9F",
-   "nav": "https://www.google.com/maps/dir/?api=1&travelmode=bicycling&destination=22.471427%2C120.463391"
+   "gmap": "https://www.google.com/maps/search/?api=1&query=%E6%85%88%E6%BF%9F%E6%9D%B1%E6%B8%AF%E9%9D%9C%E6%80%9D%E5%A0%82%20%E5%B1%8F%E6%9D%B1%E7%B8%A3%E6%9D%B1%E6%B8%AF%E9%8E%AE%E6%B2%BF%E6%B5%B7%E8%B7%AF171%E8%99%9F",
+   "nav": "https://www.google.com/maps/dir/?api=1&travelmode=bicycling&destination=22.471427%2C120.463391",
+   "addr": "屏東縣東港鎮沿海路171號（慈濟東港聯絡處／靜思堂）",
+   "rest": 10,
+   "restNote": "官方檢查站：感應晶片、補給"
   },
   {
    "id": "P17",
@@ -350,9 +397,12 @@
    "userSeg": 30.1,
    "lat": 22.294671,
    "lng": 120.643654,
-   "src": "OpenStreetMap（屏東縣枋山鄉加祿村，屏鵝公路旁的「品味軒」餐廳）",
-   "gmap": "https://www.google.com/maps/search/?api=1&query=%E5%93%81%E5%91%B3%E8%BB%92%E4%BC%91%E6%81%AF%E7%AB%99",
-   "nav": "https://www.google.com/maps/dir/?api=1&travelmode=bicycling&destination=22.294671%2C120.643654"
+   "src": "枋山鄉公所 工商名錄（地址）；座標：OpenStreetMap",
+   "gmap": "https://www.google.com/maps/search/?api=1&query=%E5%93%81%E5%91%B3%E8%BB%92%E4%BC%91%E6%81%AF%E7%AB%99%20%E5%B1%8F%E6%9D%B1%E7%B8%A3%E6%9E%8B%E5%B1%B1%E9%84%89%E5%8D%97%E5%92%8C%E8%B7%AF80%E8%99%9F",
+   "nav": "https://www.google.com/maps/dir/?api=1&travelmode=bicycling&destination=22.294671%2C120.643654",
+   "addr": "屏東縣枋山鄉加祿村南和路80號",
+   "rest": 15,
+   "restNote": "夜間休息、廁所"
   },
   {
    "id": "P18",
@@ -376,7 +426,10 @@
    ],
    "src": "7-ELEVEN 電子地圖 emap.pcsc.com.tw（2026-11-10 查詢）",
    "gmap": "https://www.google.com/maps/search/?api=1&query=7-ELEVEN%20%E6%A5%93%E6%B8%AF%E9%96%80%E5%B8%82%20%E5%B1%8F%E6%9D%B1%E7%B8%A3%E6%9E%8B%E5%B1%B1%E9%84%89%E6%A5%93%E6%B8%AF%E6%9D%91%E8%88%8A%E5%BA%84%E8%B7%AF21-3.21-4.21-5.21-6%E8%99%9F1%E6%A8%93",
-   "nav": "https://www.google.com/maps/dir/?api=1&travelmode=bicycling&destination=22.195049%2C120.691474"
+   "nav": "https://www.google.com/maps/dir/?api=1&travelmode=bicycling&destination=22.195049%2C120.691474",
+   "rest": 0,
+   "restNote": "備援：需要時 0–5 分",
+   "restMax": 5
   },
   {
    "id": "P19",
@@ -399,7 +452,9 @@
    ],
    "src": "7-ELEVEN 電子地圖 emap.pcsc.com.tw（2026-11-10 查詢）",
    "gmap": "https://www.google.com/maps/search/?api=1&query=7-ELEVEN%20%E6%AC%A3%E4%BF%9D%E9%91%AB%E9%96%80%E5%B8%82%20%E5%B1%8F%E6%9D%B1%E7%B8%A3%E8%BB%8A%E5%9F%8E%E9%84%89%E6%96%B0%E8%A1%97%E6%9D%91%E4%BF%9D%E6%96%B0%E8%B7%AF25%E4%B9%8B2%E8%99%9F%E4%B8%80%E6%A8%93",
-   "nav": "https://www.google.com/maps/dir/?api=1&travelmode=bicycling&destination=22.057101%2C120.718805"
+   "nav": "https://www.google.com/maps/dir/?api=1&travelmode=bicycling&destination=22.057101%2C120.718805",
+   "rest": 10,
+   "restNote": "補給"
   },
   {
    "id": "P20",
@@ -418,7 +473,10 @@
    "lng": 120.74814,
    "src": "全家便利商店官網門市查詢（2026-11-10 查詢）；官方店名為「全家恆春恆楠店」",
    "gmap": "https://www.google.com/maps/search/?api=1&query=%E5%85%A8%E5%AE%B6%20%E6%81%92%E6%98%A5%E6%81%92%E6%A5%A0%E5%BA%97%20%E5%B1%8F%E6%9D%B1%E7%B8%A3%E6%81%86%E6%98%A5%E9%8E%AE%E6%81%86%E5%8D%97%E8%B7%AF13-2%E8%99%9F",
-   "nav": "https://www.google.com/maps/dir/?api=1&travelmode=bicycling&destination=21.988827%2C120.74814"
+   "nav": "https://www.google.com/maps/dir/?api=1&travelmode=bicycling&destination=21.988827%2C120.74814",
+   "rest": 0,
+   "restNote": "備援：需要時 0–5 分",
+   "restMax": 5
   },
   {
    "id": "P21",
@@ -438,7 +496,9 @@
    "src": "地址：財政部稅籍登記（opengovtw.com）；座標：第三方地圖資料",
    "note": "官方：屏東-墾丁 海山露營區，臺26線 42.8K，官方大約累計 515 公里。全程關門 11/15 06:00。回程接駁車由此發車。",
    "gmap": "https://www.google.com/maps/search/?api=1&query=%E5%A2%BE%E4%B8%81%E6%B5%B7%E5%B1%B1%E9%9C%B2%E7%87%9F%E5%8D%80%20%E5%B1%8F%E6%9D%B1%E7%B8%A3%E6%81%86%E6%98%A5%E9%8E%AE%E9%B5%9D%E9%91%BE%E9%87%8C%E7%A0%82%E5%B3%B6%E8%B7%AF200-2%E8%99%9F",
-   "nav": "https://www.google.com/maps/dir/?api=1&travelmode=bicycling&destination=21.911109%2C120.848264"
+   "nav": "https://www.google.com/maps/dir/?api=1&travelmode=bicycling&destination=21.911109%2C120.848264",
+   "rest": 0,
+   "restNote": "終點，不計"
   }
  ],
  "sources": [
@@ -486,6 +546,41 @@
    "label": "海山露營區 稅籍登記地址（opengovtw）",
    "url": "https://opengovtw.com/ban/81321988",
    "kind": "第三方"
+  },
+  {
+   "label": "王功福海宮 官網（宮址、GPS）",
+   "url": "https://www.fuhaigong.org.tw/07.php",
+   "kind": "地點"
+  },
+  {
+   "label": "雲嘉南濱海國家風景區｜布袋鹽場（布袋鹽山）",
+   "url": "https://www.swcoast-nsa.gov.tw/zh-tw/attraction/details/41",
+   "kind": "地點"
+  },
+  {
+   "label": "交通部觀光署 觀光資料｜富貴角遊憩區",
+   "url": "https://media.taiwan.net.tw/zh-tw/portal/travel/details/attraction_a15011000h_000016",
+   "kind": "地點"
+  },
+  {
+   "label": "枋山鄉公所｜枋山鄉工商名錄（品味軒休息站）",
+   "url": "https://www.pthg.gov.tw/fangshan/cp.aspx?n=311686F4549C4C4C",
+   "kind": "地點"
+  },
+  {
+   "label": "慈濟教育平台｜慈濟東港聯絡處地址",
+   "url": "https://www.tzueducation.org.tw/loc.aspx?num=11",
+   "kind": "地點"
+  },
+  {
+   "label": "高雄市左營區屏山國民小學",
+   "url": "https://www.psps.kh.edu.tw/view/index.php?MainMenuId=87910&MainType=0&SubMenuId=88467&SubType=101&WebID=239",
+   "kind": "地點"
+  },
+  {
+   "label": "觀光開放資料｜風情海岸（新竹市沿海十七公里海岸）",
+   "url": "https://www.medicaltravel.org.tw/Scenery-Content.aspx?idstr=C1_376580000A_000053&lang=1",
+   "kind": "地點"
   }
  ]
 }

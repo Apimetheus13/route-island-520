@@ -13,6 +13,7 @@
   - `unverified`（選填）：未查證項目清單
 - 路線點（v3）額外欄位：`no`（序號）、`short`（島上顯示的短名）、`tags`（checkpoint / store / meal / backup / other，可多個）、`userSeg`（與上一點距離，使用者規劃值）、`cp`（官方站號）、`brand`、`addr`、`lat`/`lng`、`hours`、`amenities`、`src`（地址／座標來源）、`gmap`、`nav`（Google 地圖搜尋與導航連結）。
   - 只有官方檢查站有 `close`；其他點不會出現關門提醒。
+- `rest`（建議休息分鐘，建議值非官方）、`restMax`（備援點需要時的上限）、`restNote`（休息用途）。預估抵達＝出發＋里程÷騎乘均速＋前面各點 `rest` 合計；`meta.paceMode` 為 moving（騎乘均速，不含休息）。
 - `sources`：資料來源（`label`、`url`、`kind`），只接受 https 連結。
 
 資料擷取日：2026-11-10。來源：中華民國自行車協會 https://taiwanbike.org/index.php/688
