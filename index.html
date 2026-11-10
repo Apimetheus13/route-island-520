@@ -14,7 +14,7 @@
     <span class="brand-mark" aria-hidden="true"></span>
     <div>
       <h1>雙塔520 路線島</h1>
-      <p class="sub">2026/11/14 富貴角 → 鵝鑾鼻・非官方整理</p>
+      <p class="sub">2026/11/14 富貴角 → 墾丁・我的 21 點路線</p>
     </div>
   </div>
   <button id="warnToggle" class="switch" role="switch" aria-checked="false" type="button">
@@ -28,7 +28,7 @@
 </div>
 
 <div class="notice" role="note">
-  <strong>非官方</strong><span>個人整理的參考頁，資料摘自主辦單位網站（2026-11-10 擷取）。主辦單位註明路線為初步規劃，一切以中華民國自行車協會最新公告、行前通知與現場指示為準。</span>
+  <strong>非官方</strong><span>個人整理的參考頁，路線點與里程是我的個人規劃，官方檢查站關門時間摘自主辦單位網站（2026-11-10 擷取）。主辦單位註明路線為初步規劃，一切以中華民國自行車協會最新公告、行前通知與現場指示為準。</span>
 </div>
 
 <main id="main">
@@ -38,7 +38,7 @@
       <div><dt>日期・出發</dt><dd>2026/11/14（六）00:00</dd></div>
       <div><dt>集合・起點</dt><dd>新北石門 富貴角・楓林橋</dd></div>
       <div><dt>全程關門</dt><dd>11/15 06:00（合格時間 30 小時）</dd></div>
-      <div><dt>官方里程</dt><dd>520 公里</dd></div>
+      <div><dt>里程</dt><dd>官方 520 公里<small>我的路線規劃 503.9 公里</small></dd></div>
       <div><dt>計時</dt><dd>晶片計時（RFID）</dd></div>
       <div><dt>總爬升</dt><dd>約 1,200 公尺 <small>第三方 GPS 估算，非官方</small></dd></div>
     </dl>
@@ -49,21 +49,22 @@
     <h2 id="paceTitle" class="section-title">我的平均速度（含休息）</h2>
     <div id="paceOpts" class="pace-opts" role="group" aria-labelledby="paceTitle"></div>
     <p id="paceSummary" class="hint"></p>
-    <p class="hint">依官方里程與關門時間推算，要每站都趕上關門，全程平均（含休息）至少約 <b>17.6 km/h</b>，最吃緊的是東港站。</p>
+    <p class="hint">依我的路線里程與官方關門時間推算，要每個官方檢查站都趕上關門，全程平均（含休息）至少約 <b id="minSpeed">—</b>，最吃緊的是 <b id="minSpeedAt">—</b>。</p>
   </section>
 
   <div id="statusArea" aria-live="polite"></div>
 
   <div id="content" class="content" hidden>
     <section class="chain-section" aria-labelledby="chainTitle">
-      <h2 id="chainTitle" class="section-title">檢查站島鏈</h2>
-      <p class="hint">點一座島查看檢查站。島之間的線是路段，數字是距離（依官方「大約累計里程」相減）。示意圖，非地圖比例。</p>
+      <h2 id="chainTitle" class="section-title">路線島鏈（21 點）</h2>
+      <p class="hint">點一座島查看該點資訊與 Google 地圖連結。數字是與上一點的距離（我的路線規劃值）。示意圖，非地圖比例。</p>
       <div id="chain" class="chain"></div>
       <p id="legend" class="legend" hidden><span class="legend-swatch" aria-hidden="true"></span>橘色：預估抵達時間距關門不到 <b id="legendMin">30</b> 分鐘</p>
     </section>
 
     <section class="list-section" aria-labelledby="listTitle">
-      <h2 id="listTitle" class="section-title">檢查站清單</h2>
+      <h2 id="listTitle" class="section-title">路線點清單</h2>
+      <p class="type-legend"><span class="chip c-checkpoint">官方檢查站</span><span class="chip c-store">超商</span><span class="chip c-meal">用餐</span><span class="chip c-backup">備援</span><span class="chip c-other">其他停靠點</span></p>
       <ol id="stationList" class="station-list"></ol>
     </section>
   </div>
@@ -119,20 +120,24 @@
     <h2 id="sheetTitle">站名</h2>
     <button id="sheetClose" class="icon-btn" type="button" aria-label="關閉站點卡片">✕</button>
   </div>
+  <p id="fTags" class="sheet-tags"></p>
   <p id="sheetWarn" class="sheet-warn" hidden></p>
+  <div class="map-links">
+    <a id="fMap" class="map-btn" target="_blank" rel="noopener noreferrer" hidden>Google 地圖查看</a>
+    <a id="fNav" class="map-btn alt" target="_blank" rel="noopener noreferrer" hidden>導航（自行車）</a>
+  </div>
   <dl class="facts">
     <div><dt>累積里程</dt><dd id="fKm"></dd></div>
     <div><dt>與上一站距離</dt><dd id="fGap"></dd></div>
     <div><dt>預估抵達</dt><dd id="fEta"></dd></div>
     <div><dt>關門時間</dt><dd id="fClose"></dd></div>
-    <div><dt>地點</dt><dd id="fPlace"></dd></div>
-    <div><dt>公路樁號</dt><dd id="fRoad"></dd></div>
-    <div class="wide"><dt>趕上關門所需平均速度</dt><dd id="fNeed"></dd></div>
+    <div class="wide"><dt>地址</dt><dd id="fAddr"></dd></div>
+    <div id="fHoursRow"><dt>營業時間</dt><dd id="fHours"></dd></div>
+    <div id="fAmenRow"><dt>設施（官方門市資料）</dt><dd id="fAmen"></dd></div>
+    <div id="fNeedRow" class="wide"><dt>趕上關門所需平均速度</dt><dd id="fNeed"></dd></div>
   </dl>
   <p id="fNote" class="sheet-note" hidden></p>
   <p id="fUnverified" class="sheet-unverified" hidden></p>
-  <h3 class="supplies-title">補給／服務</h3>
-  <ul id="fSupplies" class="supplies"></ul>
   <p id="fSource" class="sheet-demo"></p>
 </section>
 

@@ -6,7 +6,8 @@
     dataUrl: 'data/stations.json',
     emptyUrl: 'data/empty.json',
     defaultWarnMinutes: 30,   // 關門提醒門檻（分鐘），stations.json 的 meta.closeWarningMinutes 會覆蓋
-    rowHeight: 96,            // 島鏈每站垂直間距（px）
+    rowHeight: 96,            // 站數多時 renderChain 會自動縮小
+    denseRowHeight: 74,            // 島鏈每站垂直間距（px）
     chainPad: 56,
     xPattern: [0.5, 0.27, 0.68, 0.36, 0.72, 0.3, 0.62, 0.28, 0.55] // 島的橫向位置（容器寬度比例）
   };
@@ -49,6 +50,18 @@
     var h = (toMin(s.close) - toMin(state.meta.startTime || '00:00')) / 60;
     return s.km > 0 && h > 0 ? Math.round(s.km / h * 10) / 10 : null;
   }
+  var TYPE_LABEL = { checkpoint: '官方檢查站', store: '超商', meal: '用餐', backup: '備援', other: '其他停靠點' };
+  function tagsOf(s) { return Array.isArray(s.tags) ? s.tags : []; }
+  function typeClass(s) {
+    var t = tagsOf(s);
+    return t.indexOf('checkpoint') >= 0 ? 't-cp' : t.indexOf('backup') >= 0 ? 't-backup' : t.indexOf('meal') >= 0 ? 't-meal' : t.indexOf('store') >= 0 ? 't-store' : 't-other';
+  }
+  function tagChips(s) {
+    var wrap = el('span', 'chips');
+    tagsOf(s).forEach(function (t) { wrap.appendChild(el('span', 'chip c-' + t, TYPE_LABEL[t] || t)); });
+    return wrap;
+  }
+  function safeUrl(u) { return /^https:\/\/www\.google\.com\/maps\//.test(u || '') ? u : null; }
   function slack(s) { return toMin(s.close) - toMin(etaOf(s)); }
   function isTight(s) { var d = slack(s); return !isNaN(d) && d < state.warnMinutes; }
   function el(tag, cls, text) { var e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; }
@@ -140,13 +153,14 @@
   function renderChain() {
     var st = state.stations, n = st.length;
     var w = chain.clientWidth || 340;
-    var h = CONFIG.chainPad * 2 + (n - 1) * CONFIG.rowHeight;
+    var rh = n > 12 ? CONFIG.denseRowHeight : CONFIG.rowHeight;
+    var h = CONFIG.chainPad * 2 + (n - 1) * rh;
     chain.style.height = h + 'px';
     chain.innerHTML = '';
     var pts = st.map(function (s, i) {
       var fx = CONFIG.xPattern[i % CONFIG.xPattern.length];
       var x = Math.min(Math.max(fx * w, 60), w - 60);
-      return { x: x, y: CONFIG.chainPad + i * CONFIG.rowHeight };
+      return { x: x, y: CONFIG.chainPad + i * rh };
     });
     var NS = 'http://www.w3.org/2000/svg';
     var svg = document.createElementNS(NS, 'svg');
@@ -170,13 +184,13 @@
     }
     st.forEach(function (s, i) {
       var tight = state.warnOn && isTight(s);
-      var btn = el('button', 'island' + (tight ? ' tight' : '') + (state.openId === s.id ? ' active' : ''));
+      var btn = el('button', 'island ' + typeClass(s) + (tight ? ' tight' : '') + (state.openId === s.id ? ' active' : ''));
       btn.type = 'button';
       btn.style.left = pts[i].x + 'px';
       btn.style.top = pts[i].y + 'px';
       btn.setAttribute('data-id', s.id);
       btn.setAttribute('aria-label', s.name + '，累積 ' + fmtKm(s.km) + (tight ? '，關門時間緊' : '') + '，開啟站點卡片');
-      btn.appendChild(el('span', 'i-name', s.name));
+      btn.appendChild(el('span', 'i-name', s.short || s.name));
       btn.appendChild(el('span', 'i-km', fmtKm(s.km)));
       btn.addEventListener('click', function () { openSheet(s.id, btn); });
       chain.appendChild(btn);
@@ -190,19 +204,20 @@
     state.stations.forEach(function (s, i) {
       var tight = state.warnOn && isTight(s);
       var li = el('li');
-      var btn = el('button', 'row' + (tight ? ' tight' : ''));
+      var btn = el('button', 'row ' + typeClass(s) + (tight ? ' tight' : ''));
       btn.type = 'button';
       btn.setAttribute('data-id', s.id);
-      btn.appendChild(el('span', 'row-badge', String(i + 1)));
+      btn.appendChild(el('span', 'row-badge', String(s.no || i + 1)));
       var main = el('span', 'row-main');
       var name = el('span', 'row-name', s.name);
       if (tight) name.appendChild(el('span', 'tag-warn', '時間緊'));
       main.appendChild(name);
+      main.appendChild(tagChips(s));
       main.appendChild(el('span', 'row-meta', '累積 ' + fmtKm(s.km) + (i > 0 ? '・距上一站 ' + fmtKm(s.km - state.stations[i - 1].km) : '・起點')));
       btn.appendChild(main);
       var side = el('span', 'row-side');
       side.appendChild(el('b', null, '預估 ' + fmtTime(etaOf(s))));
-      side.appendChild(document.createTextNode('關門 ' + fmtTime(s.close)));
+      if (s.close) side.appendChild(document.createTextNode('關門 ' + fmtTime(s.close)));
       btn.appendChild(side);
       btn.addEventListener('click', function () { openSheet(s.id, btn); });
       li.appendChild(btn);
@@ -217,10 +232,19 @@
     $('fKm').textContent = fmtKm(s.km);
     $('fGap').textContent = i > 0 ? fmtKm(s.km - state.stations[i - 1].km) : '起點';
     $('fEta').textContent = fmtTime(etaOf(s)) + (s.eta ? '' : '（以 ' + state.pace + ' km/h 推算）');
-    $('fClose').textContent = fmtTime(s.close);
-    $('fPlace').textContent = [s.region, s.place].filter(Boolean).join('・') || '—';
-    $('fRoad').textContent = s.road || '—';
-    var ns = needSpeed(s);
+    $('fClose').textContent = s.close ? fmtTime(s.close) : '無（非官方檢查站）';
+    var tg = $('fTags'); tg.innerHTML = ''; tg.appendChild(tagChips(s));
+    if (s.cp) tg.appendChild(el('span', 'chip c-cpno', s.cp));
+    $('fAddr').textContent = s.addr || (s.lat ? '未查證（導航使用 OpenStreetMap 座標）' : '未查證（僅提供名稱搜尋連結）');
+    $('fHours').textContent = s.hours || (tagsOf(s).indexOf('store') >= 0 ? '未查證' : '—');
+    $('fAmen').textContent = s.amenities && s.amenities.length ? s.amenities.join('、') : '—';
+    $('fAmenRow').hidden = tagsOf(s).indexOf('store') < 0;
+    $('fHoursRow').hidden = tagsOf(s).indexOf('store') < 0;
+    var g = safeUrl(s.gmap), nv = safeUrl(s.nav);
+    $('fMap').hidden = !g; if (g) $('fMap').href = g;
+    $('fNav').hidden = !nv; if (nv) $('fNav').href = nv;
+    var ns = s.close ? needSpeed(s) : null;
+    $('fNeedRow').hidden = !ns;
     $('fNeed').textContent = ns ? ns + ' km/h（含休息）' : '—';
     var note = $('fNote');
     note.textContent = s.note || '';
@@ -229,9 +253,8 @@
     var uv = $('fUnverified');
     uv.textContent = s.unverified && s.unverified.length ? '未查證：' + s.unverified.join('、') : '';
     uv.hidden = !uv.textContent;
-    $('fSource').textContent = s.source === 'official' ? '資料來源：主辦單位網站（2026-11-10 擷取），預估抵達與所需均速為本頁推算。' : '資料來源：未查證';
-    var ul = $('fSupplies'); ul.innerHTML = '';
-    (s.supplies && s.supplies.length ? s.supplies : ['（未提供）']).forEach(function (t) { ul.appendChild(el('li', null, t)); });
+    $('fSource').textContent = '位置／地址來源：' + (s.src || '未查證') + (s.close ? '。關門時間：主辦單位網站（2026-11-10 擷取）' : '') + '。里程為我的路線規劃值。';
+
     var warn = $('sheetWarn');
     var d = slack(s);
     if (state.warnOn && isTight(s)) {
@@ -307,6 +330,9 @@
     var last = state.stations[state.stations.length - 1];
     if (!last) return;
     var hrs = last.km / state.pace;
+    var worst = null;
+    state.stations.forEach(function (x) { var v = x.close ? needSpeed(x) : null; if (v && (!worst || v > worst.v)) worst = { v: v, s: x }; });
+    if (worst && $('minSpeed')) { $('minSpeed').textContent = worst.v + ' km/h'; $('minSpeedAt').textContent = worst.s.short || worst.s.name; }
     var limit = state.meta.timeLimitHours;
     $('paceSummary').textContent = '以平均 ' + state.pace + ' km/h（含休息）估算，' + last.km + ' 公里約需 ' +
       (Math.round(hrs * 10) / 10) + ' 小時，預估 ' + fmtTime(etaOf(last)) + ' 抵達' +

@@ -204,3 +204,36 @@ main { padding: 12px 16px 24px; max-width: 1100px; margin: 0 auto; }
 .sheet-note.conflict { background: var(--warn-soft); border-left: 4px solid var(--warn); }
 .sheet-unverified { margin: 6px 0 0; font-size: .78rem; color: #8a4b12; }
 @media (min-width: 720px) { .ov-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+
+/* ---- v3：21 點路線、類型標籤、地圖連結 ---- */
+.chips { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 2px; }
+.chip { display: inline-block; font-size: .68rem; font-weight: 600; padding: 1px 7px; border-radius: 999px; background: #eef1f1; color: var(--ink); white-space: nowrap; }
+.c-checkpoint { background: var(--sea); color: #fff; }
+.c-store { background: #dcecf7; color: #134a6e; }
+.c-meal { background: #efe1f6; color: #5b2a73; }
+.c-backup { background: #f1f1f1; color: #555; border: 1px dashed #999; }
+.c-other { background: var(--sand); color: #6a5520; }
+.c-cpno { background: #fff; border: 1px solid var(--sea); color: var(--sea); }
+.type-legend { display: flex; flex-wrap: wrap; gap: 6px; margin: 4px 0 6px; }
+.sheet-tags { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 8px; }
+.sheet-tags .chips { display: contents; }
+.map-links { display: flex; flex-wrap: wrap; gap: 8px; margin: 4px 0 10px; }
+.map-btn {
+  flex: 1 1 140px; min-height: var(--tap); display: inline-flex; align-items: center; justify-content: center;
+  padding: 0 14px; border-radius: 12px; background: var(--sea); color: #fff; font-weight: 600; text-decoration: none; font-size: .9rem;
+}
+.map-btn.alt { background: var(--card); color: var(--sea); border: 1px solid var(--sea); }
+.map-btn[hidden] { display: none; }
+.facts [hidden] { display: none; }
+/* 島的類型 */
+.island.t-store, .island.t-meal, .island.t-backup, .island.t-other { min-width: 84px; min-height: 46px; padding: 4px 10px 8px; }
+.island.t-store { background: #e6f1f8; box-shadow: inset 0 -6px 0 #4b8fbf, 0 0 0 3px rgba(255,255,255,.1), 0 5px 10px rgba(0,0,0,.25); }
+.island.t-meal { background: #f3e8f8; box-shadow: inset 0 -6px 0 #8a55a8, 0 0 0 3px rgba(255,255,255,.1), 0 5px 10px rgba(0,0,0,.25); }
+.island.t-backup { background: #f2f2f2; box-shadow: inset 0 -6px 0 #9a9a9a, 0 0 0 2px rgba(255,255,255,.5), 0 5px 10px rgba(0,0,0,.25); }
+.island.t-other { background: var(--sand); box-shadow: inset 0 -6px 0 #b89a4a, 0 0 0 3px rgba(255,255,255,.1), 0 5px 10px rgba(0,0,0,.25); }
+.island.t-store .i-name, .island.t-meal .i-name, .island.t-backup .i-name, .island.t-other .i-name { font-size: .76rem; }
+.island.active { box-shadow: inset 0 -6px 0 var(--leaf), 0 0 0 4px var(--focus), 0 6px 12px rgba(0,0,0,.25); }
+.row.t-cp .row-badge { background: var(--sea); color: #fff; box-shadow: none; }
+.row.t-store .row-badge { background: #dcecf7; box-shadow: inset 0 -4px 0 #4b8fbf; }
+.row.t-meal .row-badge { background: #efe1f6; box-shadow: inset 0 -4px 0 #8a55a8; }
+.row.t-backup .row-badge { background: #f1f1f1; box-shadow: inset 0 -4px 0 #9a9a9a; }
